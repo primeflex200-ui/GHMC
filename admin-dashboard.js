@@ -21,7 +21,7 @@ class AdminDashboard {
     checkAuthentication() {
         const urlParams = new URLSearchParams(window.location.search);
         const sessionId = urlParams.get('session');
-        const userData = localStorage.getItem('infra_user');
+        const userData = localStorage.getItem('iala_user');
 
         if (!sessionId || !userData) {
             window.location.href = 'auth-system.html';
