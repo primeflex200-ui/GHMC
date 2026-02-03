@@ -48,12 +48,17 @@ const server = http.createServer((req, res) => {
                         <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
                             <h1>404 - File Not Found</h1>
                             <p>The requested file was not found.</p>
+                            <h3>Main Application:</h3>
                             <p><a href="/">Welcome Page</a></p>
                             <p><a href="/user-access.html">User Access (Register/Login)</a></p>
                             <p><a href="/register.html">Register New Account</a></p>
                             <p><a href="/auth-system.html">Login</a></p>
                             <p><a href="/index.html?access=guest">Guest Access</a></p>
                             <p><a href="/industrial-map-google.html">Industrial Map (Google)</a></p>
+                            <h3>Preview/Demo:</h3>
+                            <p><a href="/preview-welcome.html">Preview Welcome Page</a></p>
+                            <p><a href="/preview.html">Preview App</a></p>
+                            <p><a href="/preview-with-google-maps.html">Preview with Google Maps</a></p>
                         </body>
                     </html>
                 `);
@@ -84,4 +89,6 @@ server.listen(port, () => {
     console.log(`Guest Access: http://localhost:${port}/index.html?access=guest`);
     console.log(`Industrial Map (Google): http://localhost:${port}/industrial-map-google.html`);
     console.log(`Preview with Google Maps: http://localhost:${port}/preview-with-google-maps.html`);
+    console.log(`Preview Welcome: http://localhost:${port}/preview-welcome.html`);
+    console.log(`Preview App: http://localhost:${port}/preview.html`);
 });
