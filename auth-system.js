@@ -27,12 +27,18 @@ class IALAAuthSystem {
         });
 
         // Access options
-        document.getElementById('guest-access').addEventListener('click', () => {
-            this.handleGuestAccess();
+        document.getElementById('register-access').addEventListener('click', () => {
+            this.showRegistrationScreen();
         });
 
-        document.getElementById('registered-access').addEventListener('click', () => {
-            this.showRegistrationScreen();
+        document.getElementById('login-access').addEventListener('click', () => {
+            this.showScreen('user-login-screen');
+        });
+
+        // User login form
+        document.getElementById('user-login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.handleUserLogin();
         });
 
         // Management signup form
@@ -70,8 +76,21 @@ class IALAAuthSystem {
             this.showScreen('user-access-screen');
         });
 
+        document.getElementById('back-to-user-from-login').addEventListener('click', () => {
+            this.showScreen('user-access-screen');
+        });
+
         document.getElementById('back-to-login-from-signup').addEventListener('click', () => {
             this.showScreen('login-screen');
+        });
+
+        // Navigation between user screens
+        document.getElementById('goto-register').addEventListener('click', () => {
+            this.showRegistrationScreen();
+        });
+
+        document.getElementById('back-to-user-access-from-login').addEventListener('click', () => {
+            this.showScreen('user-access-screen');
         });
 
         // Management role selection change
@@ -318,6 +337,41 @@ class IALAAuthSystem {
                 this.loginUser(newUser);
             }, 2000);
         }, 2000);
+    }
+
+    handleUserLogin() {
+        const loginId = document.getElementById('user-login-id').value.trim();
+        const password = document.getElementById('user-login-password').value;
+
+        if (!loginId || !password) {
+            this.showError('Please fill in all fields');
+            return;
+        }
+
+        this.showLoading('user-login-form');
+
+        // Simulate login process
+        setTimeout(() => {
+            // Find user by email or mobile
+            const user = this.users.find(u => 
+                (u.email === loginId || u.mobile === loginId) && 
+                u.password === password &&
+                u.role === 'user'
+            );
+
+            if (user) {
+                this.hideLoading('user-login-form');
+                this.showSuccess('Login successful!');
+                
+                // Login the user
+                setTimeout(() => {
+                    this.loginUser(user);
+                }, 1500);
+            } else {
+                this.hideLoading('user-login-form');
+                this.showError('Invalid email/mobile or password');
+            }
+        }, 1500);
     }
 
     handleGuestAccess() {
