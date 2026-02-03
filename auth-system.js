@@ -15,7 +15,7 @@ class IALAAuthSystem {
     }
 
     initializeUI() {
-        // Hide citizen access section on initial load (welcome screen is default)
+        // Hide IALA user access section on initial load (welcome screen is default)
         const citizenAccessSection = document.querySelector('.citizen-access-section');
         if (citizenAccessSection) {
             citizenAccessSection.style.display = 'none';
@@ -66,7 +66,7 @@ class IALAAuthSystem {
             this.clearAllSessions();
         });
 
-        // Citizen access button
+        // IALA User access button
         document.getElementById('citizen-access-btn').addEventListener('click', () => {
             this.showScreen('user-access-screen');
         });
@@ -974,7 +974,7 @@ class IALAAuthSystem {
         });
         document.getElementById(screenId).classList.add('active');
         
-        // Hide citizen access section when showing user access screens or welcome screen
+        // Hide IALA user access section when showing user access screens or welcome screen
         const citizenAccessSection = document.querySelector('.citizen-access-section');
         if (citizenAccessSection) {
             if (screenId === 'welcome-screen' || screenId === 'user-access-screen' || screenId === 'registration-screen' || screenId === 'user-login-screen') {
