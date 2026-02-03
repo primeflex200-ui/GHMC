@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GHMC Civic Services</title>
+    <title>IALA Cherlapally App</title>
     <link rel="stylesheet" href="styles.css">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
@@ -17,7 +17,7 @@
     <div class="app-container">
         <!-- Header -->
         <header class="app-header">
-            <h1>GHMC Civic Services</h1>
+            <h1>IALA Cherlapally App</h1>
             <div class="header-actions">
                 <div class="location-info">
                     <span class="location-text">Hyderabad, Telangana</span>
@@ -191,9 +191,9 @@
             const urlParams = new URLSearchParams(window.location.search);
             const hasGuestAccess = urlParams.get('access') === 'guest';
             const hasSessionId = urlParams.get('session');
-            const hasStoredSession = localStorage.getItem('ghmc_session') || 
-                                   localStorage.getItem('ghmc_user') || 
-                                   sessionStorage.getItem('ghmc_user_session');
+            const hasStoredSession = localStorage.getItem('iala_session') || 
+                                   localStorage.getItem('iala_user') || 
+                                   sessionStorage.getItem('iala_user_session');
             
             // Allow access if any of these conditions are met:
             // 1. Guest access parameter
@@ -243,7 +243,7 @@
         // Full JavaScript for proper navigation
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize the app
-            window.ghmc_app = new GHMCApp();
+            window.iala_app = new IALAApp();
         });
 
         // Global logout function
@@ -253,10 +253,10 @@
             try {
                 // Clear all session data (both guest and role-based sessions)
                 sessionStorage.clear();
-                localStorage.removeItem('ghmc_session');
-                localStorage.removeItem('ghmc_user');
-                localStorage.removeItem('ghmc_session_data');
-                localStorage.removeItem('ghmc_user_session');
+                localStorage.removeItem('infra_session');
+                localStorage.removeItem('infra_user');
+                localStorage.removeItem('infra_session_data');
+                localStorage.removeItem('infra_user_session');
                 console.log('All session data cleared');
                 
                 // Show logout confirmation
@@ -282,15 +282,15 @@
         function forceLogout() {
             console.log('Force logout called');
             sessionStorage.clear();
-            localStorage.removeItem('ghmc_session');
-            localStorage.removeItem('ghmc_user');
-            localStorage.removeItem('ghmc_session_data');
-            localStorage.removeItem('ghmc_user_session');
+            localStorage.removeItem('iala_session');
+            localStorage.removeItem('iala_user');
+            localStorage.removeItem('iala_session_data');
+            localStorage.removeItem('iala_user_session');
             window.location.href = 'auth-system.html';
         }
 
-        // GHMC Civic Services App JavaScript
-        class GHMCApp {
+        // IALA Civic Services App JavaScript
+        class IALAApp {
             constructor() {
                 this.currentScreen = 'home';
                 this.currentUser = {
@@ -462,7 +462,15 @@
                             <p style="font-size: 12px; color: #666; margin-top: 4px;">Upload a photo to help us understand the issue better</p>
                         </div>
 
-                        <button onclick="window.ghmc_app.submitComplaint()" style="width: 100%; padding: 12px; background: #333; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: 500;">Submit Complaint</button>
+                        <!-- Submit Button with enhanced visibility -->
+                        <div style="margin-top: 24px; margin-bottom: 24px; padding: 16px 0;">
+                            <button onclick="window.ghmc_app.submitComplaint()" style="width: 100%; padding: 16px; background: #333; color: white; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; font-weight: 600; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: all 0.2s ease;" onmouseover="this.style.background='#555'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='#333'; this.style.transform='translateY(0)'">
+                                Submit Complaint
+                            </button>
+                        </div>
+                        
+                        <!-- Extra spacing to ensure button is visible -->
+                        <div style="height: 60px;"></div>
                     </div>
                 `;
             }
@@ -477,7 +485,7 @@
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                                 <div>
                                     <div style="font-size: 16px; font-weight: 600;">Street Light Not Working</div>
-                                    <div style="font-size: 12px; color: #666;">Complaint ID: GHMC2024001</div>
+                                    <div style="font-size: 12px; color: #666;">Complaint ID: IALA2024001</div>
                                 </div>
                                 <span style="background: #d0d0d0; color: #000; padding: 4px 8px; border-radius: 4px; font-size: 11px;">In Progress</span>
                             </div>
@@ -489,7 +497,7 @@
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                                 <div>
                                     <div style="font-size: 16px; font-weight: 600;">Road Pothole</div>
-                                    <div style="font-size: 12px; color: #666;">Complaint ID: GHMC2024002</div>
+                                    <div style="font-size: 12px; color: #666;">Complaint ID: IALA2024002</div>
                                 </div>
                                 <span style="background: #333; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 11px;">Resolved</span>
                             </div>
@@ -587,7 +595,7 @@
                         <div id="chat-messages" style="flex: 1; background: #f8f8f8; border-radius: 8px; padding: 16px; margin-bottom: 16px; overflow-y: auto; max-height: 400px;">
                             <div style="background: #e3f2fd; padding: 12px; border-radius: 8px; margin-bottom: 12px; max-width: 80%;">
                                 <div style="font-size: 12px; color: #666; margin-bottom: 4px;">AI Assistant</div>
-                                <div>Hello! I'm your GHMC AI Assistant. I can help you with:</div>
+                                <div>Hello! I'm your IALA AI Assistant. I can help you with:</div>
                                 <ul style="margin: 8px 0 0 16px; padding: 0;">
                                     <li>Filing complaints and tracking status</li>
                                     <li>Information about civic services</li>
@@ -634,7 +642,7 @@
                 try {
                     // Clear any session data
                     sessionStorage.clear();
-                    localStorage.removeItem('ghmc_user_session');
+                    localStorage.removeItem('infra_user_session');
                     console.log('Session data cleared');
                     
                     // Show logout confirmation
@@ -727,8 +735,8 @@
                 const responses = {
                     'how do i file a complaint?': 'To file a complaint: 1) Click on a service card from the home screen, 2) Fill in the complaint form with location and description, 3) Optionally add a photo, 4) Submit. You\'ll receive a complaint ID for tracking.',
                     'track my complaint': 'You can track your complaints by clicking "My Complaints" in the bottom navigation. There you\'ll see all your submitted complaints with their current status and updates.',
-                    'emergency contacts': 'Emergency Contacts:\n• Fire: 101\n• Police: 100\n• Ambulance: 108\n• GHMC Control Room: 040-21111111\n• Water Emergency: 040-23220088\n• Electricity: 1912',
-                    'default': 'I understand you need help with civic services. I can assist with filing complaints, tracking existing complaints, providing emergency contacts, and answering questions about GHMC services. What specific help do you need?'
+                    'emergency contacts': 'Emergency Contacts:\n• Fire: 101\n• Police: 100\n• Ambulance: 108\n• IALA Control Room: 040-21111111\n• Water Emergency: 040-23220088\n• Electricity: 1912',
+                    'default': 'I understand you need help with civic services. I can assist with filing complaints, tracking existing complaints, providing emergency contacts, and answering questions about IALA services. What specific help do you need?'
                 };
 
                 const key = message.toLowerCase();
@@ -736,8 +744,12 @@
             }
 
             submitComplaint() {
+                console.log('Submit complaint function called'); // Debug log
+                
                 const category = document.getElementById('category-dropdown').value;
                 const description = document.getElementById('description-field').value.trim();
+
+                console.log('Category:', category, 'Description:', description); // Debug log
 
                 if (!category) {
                     alert('Please select an issue category.');
@@ -750,7 +762,24 @@
                 }
 
                 // Generate complaint ID
-                const complaintId = 'GHMC' + new Date().getFullYear() + String(Math.floor(Math.random() * 1000)).padStart(3, '0');
+                const complaintId = 'IALA' + new Date().getFullYear() + String(Math.floor(Math.random() * 1000)).padStart(3, '0');
+                
+                // Store the complaint for demo purposes
+                const complaint = {
+                    id: complaintId,
+                    category: category,
+                    description: description,
+                    location: 'Auto-detected: Current Location',
+                    submittedDate: new Date().toISOString(),
+                    status: 'new',
+                    citizenName: 'Guest User',
+                    citizenPhone: 'N/A'
+                };
+                
+                // Save to localStorage for demo
+                const existingComplaints = JSON.parse(localStorage.getItem('iala_complaints') || '[]');
+                existingComplaints.push(complaint);
+                localStorage.setItem('iala_complaints', JSON.stringify(existingComplaints));
                 
                 alert(`Complaint submitted successfully!\n\nComplaint ID: ${complaintId}\nCategory: ${this.getServiceTitle(category)}\n\nYou can track your complaint status in the "My Complaints" section.`);
                 

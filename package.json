@@ -1,13 +1,13 @@
 {
-  "name": "ghmc-civic-services",
+  "name": "iala-civic-services",
   "version": "1.0.0",
-  "description": "GHMC Civic Services - Digital Platform for Greater Hyderabad Municipal Corporation",
+  "description": "IALA Civic Services - Digital Platform for IALA Cherlapally",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js"
   },
-  "keywords": ["ghmc", "civic", "services", "hyderabad", "municipal"],
-  "author": "GHMC Development Team",
+  "keywords": ["iala", "civic", "services", "cherlapally"],
+  "author": "IALA Development Team",
   "license": "MIT"
 }

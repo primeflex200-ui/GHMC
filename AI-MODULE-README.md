@@ -1,10 +1,10 @@
-# GHMC AI Assistant Module - External Add-on
+# IALA AI Assistant Module - External Add-on
 
-An intelligent grievance and service request handling system that integrates with the existing GHMC Civic Services application without modifying any existing functionality.
+An intelligent grievance and service request handling system that integrates with the existing IALA Civic Services application without modifying any existing functionality.
 
 ## Overview
 
-This AI module provides 24/7 automated complaint handling through chat and voice interfaces, supporting multiple Indian languages. It operates as an external add-on that seamlessly integrates with the main GHMC application.
+This AI module provides 24/7 automated complaint handling through chat and voice interfaces, supporting multiple Indian languages. It operates as an external add-on that seamlessly integrates with the main IALA application.
 
 ## Key Features
 
@@ -53,7 +53,7 @@ This AI module provides 24/7 automated complaint handling through chat and voice
 2. The AI assistant will be available as a floating chat widget
 3. Admin dashboard available at `admin-dashboard.html`
 
-### Method 2: Integration with Existing GHMC App
+### Method 2: Integration with Existing IALA App
 1. Add the integration script to your existing `index.html`:
 ```html
 <script src="integrate-ai.js"></script>
@@ -134,8 +134,8 @@ window.ghmc_integration.submitComplaint(complaint);
 ### Status Updates
 ```javascript
 // Update complaint status
-window.ghmc_integration.updateComplaintStatus(
-    'GHMC2024001', 
+window.iala_integration.updateComplaintStatus(
+    'IALA2024001', 
     'resolved', 
     'Issue fixed by maintenance team'
 );
@@ -147,7 +147,7 @@ window.ghmc_integration.updateComplaintStatus(
 const complaints = await window.ghmc_integration.getAllComplaints();
 
 // Get complaint by ID
-const complaint = await window.ghmc_integration.getComplaintStatus('GHMC2024001');
+const complaint = await window.iala_integration.getComplaintStatus('IALA2024001');
 
 // Get statistics
 const stats = window.ghmc_integration.getComplaintStatistics();
@@ -289,12 +289,12 @@ const ADMIN_CONFIG = {
 #### AI Module Not Loading
 ```javascript
 // Check if integration script is loaded
-if (typeof window.GHMC_AI_API === 'undefined') {
+if (typeof window.IALA_AI_API === 'undefined') {
     console.error('AI integration script not loaded');
 }
 
 // Verify configuration
-console.log('AI Config:', window.GHMC_AI_CONFIG);
+console.log('AI Config:', window.IALA_AI_CONFIG);
 ```
 
 #### Voice Recognition Not Working
@@ -326,7 +326,7 @@ window.ghmc_integration.getAllComplaints()
 ### Debug Mode
 ```javascript
 // Enable debug logging
-window.GHMC_AI_CONFIG.debug = true;
+window.IALA_AI_CONFIG.debug = true;
 
 // View integration status
 console.log('Integration Status:', {
@@ -365,4 +365,4 @@ console.log('Integration Status:', {
 
 ---
 
-*This AI module enhances the existing GHMC Civic Services application without modifying any current functionality, providing intelligent automation while preserving the original user experience.*
+*This AI module enhances the existing IALA Civic Services application without modifying any current functionality, providing intelligent automation while preserving the original user experience.*

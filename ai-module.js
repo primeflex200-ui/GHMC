@@ -1,5 +1,5 @@
-// GHMC AI Assistant Module - External Add-on
-class GHMCAIAssistant {
+// IALA AI Assistant Module - External Add-on
+class IALAAIAssistant {
     constructor() {
         this.isListening = false;
         this.currentLanguage = 'en';
@@ -409,7 +409,7 @@ Your complaint has been logged and will be assigned to the appropriate team with
 
     handleComplaintTracking(input) {
         // Extract complaint ID if provided
-        const idMatch = input.match(/GHMC\d{7}/i);
+        const idMatch = input.match(/IALA\d{7}/i);
         
         if (idMatch) {
             const complaintId = idMatch[0].toUpperCase();
@@ -496,7 +496,7 @@ Available 24/7 for your convenience. Just describe your issue and I'll categoriz
 
     generateComplaintId() {
         const timestamp = Date.now().toString().slice(-7);
-        return `GHMC${timestamp}`;
+        return `IALA${timestamp}`;
     }
 
     getStatusText(status) {
@@ -510,7 +510,7 @@ Available 24/7 for your convenience. Just describe your issue and I'll categoriz
     }
 
     integrateWithMainSystem(complaint) {
-        // This would integrate with the main GHMC system via API
+        // This would integrate with the main IALA system via API
         // For demo purposes, we'll simulate the integration
         console.log('Integrating complaint with main system:', complaint);
         
@@ -576,14 +576,14 @@ Available 24/7 for your convenience. Just describe your issue and I'll categoriz
 
     loadConversationHistory() {
         // Load from localStorage if available
-        const saved = localStorage.getItem('ghmc-ai-history');
+        const saved = localStorage.getItem('infra-ai-history');
         if (saved) {
             this.conversationHistory = JSON.parse(saved);
         }
     }
 
     saveConversationHistory() {
-        localStorage.setItem('ghmc-ai-history', JSON.stringify(this.conversationHistory));
+        localStorage.setItem('infra-ai-history', JSON.stringify(this.conversationHistory));
     }
 
     goBackToApp() {
@@ -591,7 +591,7 @@ Available 24/7 for your convenience. Just describe your issue and I'll categoriz
         this.saveConversationHistory();
         
         // Check if user has a valid session
-        const userData = localStorage.getItem('ghmc_user');
+        const userData = localStorage.getItem('infra_user');
         
         if (userData) {
             try {
@@ -618,12 +618,12 @@ Available 24/7 for your convenience. Just describe your issue and I'll categoriz
 
 // Initialize AI Assistant when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    window.ghmc_ai = new GHMCAIAssistant();
+    window.iala_ai = new IALAAIAssistant();
     
     // Save conversation history before page unload
     window.addEventListener('beforeunload', () => {
-        if (window.ghmc_ai) {
-            window.ghmc_ai.saveConversationHistory();
+        if (window.infra_ai) {
+            window.infra_ai.saveConversationHistory();
         }
     });
 });

@@ -1,7 +1,7 @@
-// AI Integration Layer - Connects AI Module with Main GHMC System
-class GHMCIntegration {
+// AI Integration Layer - Connects AI Module with Main IALA System
+class IALAIntegration {
     constructor() {
-        this.apiEndpoint = '/api/ghmc'; // Would be actual API endpoint
+        this.apiEndpoint = '/api/iala'; // Would be actual API endpoint
         this.complaints = [];
         this.teams = {
             'street-light': 'Electrical Maintenance Team',
@@ -85,7 +85,7 @@ class GHMCIntegration {
 
     // Sync AI-captured complaints with main system
     syncWithMainSystem(complaint) {
-        // This would sync with the existing GHMC system
+        // This would sync with the existing IALA system
         console.log('Syncing with main system:', complaint);
         
         // Add to main system's complaint list (simulated)
@@ -139,7 +139,7 @@ class GHMCIntegration {
     generateComplaintId() {
         const timestamp = Date.now().toString();
         const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-        return `GHMC${timestamp.slice(-4)}${random}`;
+        return `IALA${timestamp.slice(-4)}${random}`;
     }
 
     saveToStorage() {
@@ -287,4 +287,4 @@ class GHMCIntegration {
 window.ghmc_integration = new GHMCIntegration();
 
 // Export for use by AI module
-window.GHMCIntegration = GHMCIntegration;
+window.IALAIntegration = IALAIntegration;

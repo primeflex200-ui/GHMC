@@ -1,10 +1,10 @@
-# GitHub Pages Configuration for GHMC Civic Services
+# GitHub Pages Configuration for IALA Civic Services
 
 # Site settings
-title: "GHMC Civic Services"
-description: "Complete Digital Platform for Greater Hyderabad Municipal Corporation"
+title: "IALA Civic Services"
+description: "Complete Digital Platform for IALA Cherlapally"
 url: "https://primeflex200-ui.github.io"
-baseurl: "/GHMC"
+baseurl: "/IALA"
 
 # Build settings
 markdown: kramdown

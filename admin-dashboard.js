@@ -1,708 +1,835 @@
-// Admin Dashboard JavaScript
-class GHMCAdminDashboard {
+// Administrator Dashboard JavaScript
+class AdminDashboard {
     constructor() {
+        this.currentUser = null;
         this.complaints = [];
-        this.filteredComplaints = [];
-        this.pendingSignups = [];
-        this.currentView = 'table';
-        this.selectedComplaint = null;
-        this.refreshInterval = null;
+        this.users = [];
+        this.signupRequests = [];
+        this.currentTab = 'overview';
+        this.currentSignupId = null;
         this.init();
     }
 
     init() {
+        this.checkAuthentication();
+        this.loadUserData();
+        this.loadAllData();
+        this.updateStats();
         this.setupEventListeners();
-        this.loadComplaints();
-        this.loadPendingSignups();
-        this.startAutoRefresh();
-        this.updateLastUpdatedTime();
     }
 
-    setupEventListeners() {
-        // Filters
-        document.getElementById('status-filter').addEventListener('change', () => this.applyFilters());
-        document.getElementById('category-filter').addEventListener('change', () => this.applyFilters());
-        document.getElementById('team-filter').addEventListener('change', () => this.applyFilters());
+    checkAuthentication() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session');
+        const userData = localStorage.getItem('infra_user');
 
-        // Controls
-        document.getElementById('refresh-btn').addEventListener('click', () => this.loadComplaints());
-        document.getElementById('export-btn').addEventListener('click', () => this.exportData());
-
-        // View toggle
-        document.querySelectorAll('.toggle-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const view = e.target.dataset.view;
-                this.switchView(view);
-            });
-        });
-
-        // Modal controls
-        document.getElementById('close-modal').addEventListener('click', () => this.closeModal());
-        document.getElementById('close-modal-btn').addEventListener('click', () => this.closeModal());
-        document.getElementById('update-status-btn').addEventListener('click', () => this.updateComplaintStatus());
-
-        // Close modal on outside click
-        document.getElementById('complaint-modal').addEventListener('click', (e) => {
-            if (e.target.id === 'complaint-modal') {
-                this.closeModal();
-            }
-        });
-
-        // Signup approval controls
-        document.getElementById('approve-signup-btn').addEventListener('click', () => this.approveSelectedSignup());
-        document.getElementById('reject-signup-btn').addEventListener('click', () => this.rejectSelectedSignup());
-        document.getElementById('close-signup-modal').addEventListener('click', () => this.closeSignupModal());
-        document.getElementById('close-signup-modal-btn').addEventListener('click', () => this.closeSignupModal());
-
-        // Close signup modal on outside click
-        document.getElementById('signup-modal').addEventListener('click', (e) => {
-            if (e.target.id === 'signup-modal') {
-                this.closeSignupModal();
-            }
-        });
-    }
-
-    async loadComplaints() {
-        try {
-            // Get complaints from integration layer
-            if (window.ghmc_integration) {
-                this.complaints = await window.ghmc_integration.getAllComplaints();
-            } else {
-                // Fallback to localStorage
-                const saved = localStorage.getItem('ghmc-ai-complaints');
-                this.complaints = saved ? JSON.parse(saved) : [];
-            }
-
-            this.applyFilters();
-            this.updateStatistics();
-            this.updateLastUpdatedTime();
-        } catch (error) {
-            console.error('Error loading complaints:', error);
-            this.showError('Failed to load complaints');
-        }
-    }
-
-    async loadPendingSignups() {
-        try {
-            // Get pending signup requests
-            if (window.ghmc_auth) {
-                this.pendingSignups = window.ghmc_auth.getPendingSignupRequestsForAdmin();
-            } else {
-                // Fallback to localStorage
-                const saved = localStorage.getItem('ghmc_pending_signups');
-                this.pendingSignups = saved ? JSON.parse(saved) : [];
-            }
-
-            this.renderPendingSignups();
-            this.updateSignupStatistics();
-        } catch (error) {
-            console.error('Error loading pending signups:', error);
-            this.showError('Failed to load pending signup requests');
-        }
-    }
-
-    applyFilters() {
-        const statusFilter = document.getElementById('status-filter').value;
-        const categoryFilter = document.getElementById('category-filter').value;
-        const teamFilter = document.getElementById('team-filter').value;
-
-        this.filteredComplaints = this.complaints.filter(complaint => {
-            const statusMatch = !statusFilter || complaint.status === statusFilter;
-            const categoryMatch = !categoryFilter || complaint.category === categoryFilter;
-            const teamMatch = !teamFilter || complaint.assignedTeam === teamFilter;
-
-            return statusMatch && categoryMatch && teamMatch;
-        });
-
-        this.renderComplaints();
-    }
-
-    updateStatistics() {
-        const stats = {
-            total: this.complaints.length,
-            pending: this.complaints.filter(c => c.status === 'submitted').length,
-            inProgress: this.complaints.filter(c => c.status === 'in-progress' || c.status === 'assigned').length,
-            resolved: this.complaints.filter(c => c.status === 'resolved').length
-        };
-
-        document.getElementById('total-complaints').textContent = stats.total;
-        document.getElementById('pending-complaints').textContent = stats.pending;
-        document.getElementById('in-progress-complaints').textContent = stats.inProgress;
-        document.getElementById('resolved-complaints').textContent = stats.resolved;
-    }
-
-    updateSignupStatistics() {
-        const pendingCount = this.pendingSignups.length;
-        const signupCountElement = document.getElementById('pending-signups-count');
-        
-        if (signupCountElement) {
-            signupCountElement.textContent = pendingCount;
-            
-            // Show notification badge if there are pending signups
-            const badge = document.querySelector('.signup-notification-badge');
-            if (badge) {
-                badge.style.display = pendingCount > 0 ? 'inline-block' : 'none';
-                badge.textContent = pendingCount;
-            }
-        }
-    }
-
-    renderPendingSignups() {
-        const tbody = document.getElementById('pending-signups-table-body');
-        
-        if (!tbody) return; // Element might not exist on all admin pages
-        
-        if (this.pendingSignups.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="6" class="empty-state">
-                        <h3>No pending signup requests</h3>
-                        <p>All signup requests have been processed</p>
-                    </td>
-                </tr>
-            `;
+        if (!sessionId || !userData) {
+            window.location.href = 'auth-system.html';
             return;
         }
 
-        tbody.innerHTML = this.pendingSignups.map(signup => `
-            <tr onclick="adminDashboard.showSignupDetails('${signup.id}')">
-                <td>${signup.id}</td>
-                <td>${signup.name}</td>
-                <td>${signup.employeeId}</td>
-                <td><span class="role-badge role-${signup.role}">${this.getRoleDisplayName(signup.role)}</span></td>
-                <td>${signup.department || 'N/A'}</td>
-                <td>${this.formatDate(signup.requestDate)}</td>
-            </tr>
-        `).join('');
-    }
-
-    showSignupDetails(signupId) {
-        const signup = this.pendingSignups.find(s => s.id === signupId);
-        if (!signup) return;
-
-        this.selectedSignup = signup;
-        
-        const modalBody = document.getElementById('signup-modal-body');
-        modalBody.innerHTML = `
-            <div class="detail-field">
-                <div class="detail-label">Request ID</div>
-                <div class="detail-value">${signup.id}</div>
-            </div>
-            
-            <div class="detail-field">
-                <div class="detail-label">Full Name</div>
-                <div class="detail-value">${signup.name}</div>
-            </div>
-            
-            <div class="detail-field">
-                <div class="detail-label">Employee ID</div>
-                <div class="detail-value">${signup.employeeId}</div>
-            </div>
-            
-            <div class="detail-field">
-                <div class="detail-label">Requested Role</div>
-                <div class="detail-value">
-                    <span class="role-badge role-${signup.role}">${this.getRoleDisplayName(signup.role)}</span>
-                </div>
-            </div>
-            
-            <div class="detail-field">
-                <div class="detail-label">Email</div>
-                <div class="detail-value">${signup.email}</div>
-            </div>
-            
-            <div class="detail-field">
-                <div class="detail-label">Mobile</div>
-                <div class="detail-value">${signup.mobile}</div>
-            </div>
-            
-            ${signup.department ? `
-                <div class="detail-field">
-                    <div class="detail-label">Department</div>
-                    <div class="detail-value">${this.getDepartmentDisplayName(signup.department)}</div>
-                </div>
-            ` : ''}
-            
-            ${signup.area ? `
-                <div class="detail-field">
-                    <div class="detail-label">Area</div>
-                    <div class="detail-value">${this.getAreaDisplayName(signup.area)}</div>
-                </div>
-            ` : ''}
-            
-            <div class="detail-field">
-                <div class="detail-label">Justification</div>
-                <div class="detail-value">${signup.justification}</div>
-            </div>
-            
-            <div class="detail-field">
-                <div class="detail-label">Supervisor/Reference</div>
-                <div class="detail-value">${signup.supervisor}</div>
-            </div>
-            
-            <div class="detail-field">
-                <div class="detail-label">Request Date</div>
-                <div class="detail-value">${this.formatDateTime(signup.requestDate)}</div>
-            </div>
-        `;
-
-        document.getElementById('signup-modal').classList.add('active');
-    }
-
-    closeSignupModal() {
-        document.getElementById('signup-modal').classList.remove('active');
-        this.selectedSignup = null;
-    }
-
-    async approveSelectedSignup() {
-        if (!this.selectedSignup) return;
-
         try {
-            if (window.ghmc_auth) {
-                const currentUser = window.ghmc_auth.getCurrentUser();
-                const approvedUser = window.ghmc_auth.approveSignupRequest(
-                    this.selectedSignup.id, 
-                    currentUser.id
-                );
-                
-                if (approvedUser) {
-                    this.showSuccess(`Signup request approved for ${approvedUser.name}`);
-                    this.closeSignupModal();
-                    this.loadPendingSignups();
-                }
+            this.currentUser = JSON.parse(userData);
+            if (this.currentUser.role !== 'admin') {
+                alert('Access denied. This dashboard is for administrators only.');
+                window.location.href = 'auth-system.html';
+                return;
             }
         } catch (error) {
-            console.error('Error approving signup:', error);
-            this.showError('Failed to approve signup request');
+            console.error('Error parsing user data:', error);
+            window.location.href = 'auth-system.html';
         }
     }
 
-    async rejectSelectedSignup() {
-        if (!this.selectedSignup) return;
+    loadUserData() {
+        if (this.currentUser) {
+            document.getElementById('user-name').textContent = this.currentUser.name || 'Administrator';
+        }
+    }
 
-        const reason = prompt('Please provide a reason for rejection:');
-        if (!reason) return;
+    loadAllData() {
+        this.loadComplaints();
+        this.loadUsers();
+        this.loadSignups();
+    }
 
-        try {
-            if (window.ghmc_auth) {
-                const currentUser = window.ghmc_auth.getCurrentUser();
-                const success = window.ghmc_auth.rejectSignupRequest(
-                    this.selectedSignup.id, 
-                    reason,
-                    currentUser.id
-                );
-                
-                if (success) {
-                    this.showSuccess(`Signup request rejected for ${this.selectedSignup.name}`);
-                    this.closeSignupModal();
-                    this.loadPendingSignups();
-                }
+    loadComplaints() {
+        const savedComplaints = localStorage.getItem('iala_complaints');
+        if (savedComplaints) {
+            this.complaints = JSON.parse(savedComplaints);
+        } else {
+            this.complaints = [];
+        }
+        this.renderComplaints();
+    }
+
+    loadUsers() {
+        const savedUsers = localStorage.getItem('iala_users');
+        if (savedUsers) {
+            this.users = JSON.parse(savedUsers);
+        } else {
+            this.users = [];
+        }
+        this.renderUsers();
+    }
+
+    loadSignups() {
+        const savedSignups = localStorage.getItem('iala_pending_signups');
+        if (savedSignups) {
+            this.signupRequests = JSON.parse(savedSignups);
+        } else {
+            this.signupRequests = [];
+        }
+        this.renderSignups();
+    }
+
+    updateStats() {
+        const totalComplaints = this.complaints.length;
+        const activeComplaints = this.complaints.filter(c => c.status !== 'completed').length;
+        const resolvedComplaints = this.complaints.filter(c => c.status === 'completed').length;
+        const totalUsers = this.users.length;
+        const pendingSignups = this.signupRequests.length;
+
+        document.getElementById('total-complaints').textContent = totalComplaints;
+        document.getElementById('active-complaints').textContent = activeComplaints;
+        document.getElementById('resolved-complaints').textContent = resolvedComplaints;
+        document.getElementById('total-users').textContent = totalUsers;
+        document.getElementById('pending-signups').textContent = pendingSignups;
+    }
+
+    setupEventListeners() {
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const tab = e.target.dataset.tab;
+                this.switchTab(tab);
+            });
+        });
+
+        // Modal close events
+        window.onclick = (event) => {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
             }
-        } catch (error) {
-            console.error('Error rejecting signup:', error);
-            this.showError('Failed to reject signup request');
+        };
+    }
+
+    switchTab(tabName) {
+        // Update tab buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+        // Update tab content
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        document.getElementById(`${tabName}-tab`).classList.add('active');
+
+        this.currentTab = tabName;
+
+        // Load data for the active tab
+        switch (tabName) {
+            case 'complaints':
+                this.renderComplaints();
+                break;
+            case 'users':
+                this.renderUsers();
+                break;
+            case 'signups':
+                this.renderSignups();
+                break;
+            case 'reports':
+                // Reports are generated on demand
+                break;
         }
     }
 
     renderComplaints() {
-        if (this.currentView === 'table') {
-            this.renderTableView();
-        } else {
-            this.renderCardView();
-        }
-    }
-
-    renderTableView() {
-        const tbody = document.getElementById('complaints-table-body');
+        const tbody = document.getElementById('admin-complaints-tbody');
+        const statusFilter = document.getElementById('complaints-status-filter')?.value || 'all';
+        const categoryFilter = document.getElementById('complaints-category-filter')?.value || 'all';
         
-        if (this.filteredComplaints.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="7" class="empty-state">
-                        <h3>No complaints found</h3>
-                        <p>No complaints match the current filters</p>
-                    </td>
-                </tr>
-            `;
-            return;
+        let filteredComplaints = this.complaints;
+        
+        if (statusFilter !== 'all') {
+            filteredComplaints = filteredComplaints.filter(c => c.status === statusFilter);
         }
-
-        tbody.innerHTML = this.filteredComplaints.map(complaint => `
-            <tr onclick="adminDashboard.showComplaintDetails('${complaint.id}')">
-                <td>${complaint.id}</td>
-                <td>${this.getCategoryDisplayName(complaint.category)}</td>
-                <td><span class="status-badge status-${complaint.status}">${this.getStatusDisplayName(complaint.status)}</span></td>
-                <td>${complaint.assignedTeam || 'Unassigned'}</td>
-                <td><span class="language-indicator">${(complaint.language || 'en').toUpperCase()}</span></td>
-                <td>${this.formatDate(complaint.submittedAt)}</td>
+        
+        if (categoryFilter !== 'all') {
+            filteredComplaints = filteredComplaints.filter(c => c.category === categoryFilter);
+        }
+        
+        if (!tbody) return;
+        
+        tbody.innerHTML = '';
+        
+        filteredComplaints.forEach(complaint => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><strong>${complaint.id}</strong></td>
+                <td>${this.getCategoryName(complaint.category)}</td>
+                <td>${complaint.location}</td>
+                <td><span class="status-badge ${complaint.status}">${this.getStatusName(complaint.status)}</span></td>
+                <td>${complaint.assignedTo ? this.getAssignedToName(complaint.assignedTo) : 'Not Assigned'}</td>
+                <td>${this.formatDate(complaint.submittedDate)}</td>
                 <td>
-                    <button class="action-btn" onclick="event.stopPropagation(); adminDashboard.showComplaintDetails('${complaint.id}')">View</button>
-                    <button class="action-btn" onclick="event.stopPropagation(); adminDashboard.quickStatusUpdate('${complaint.id}')">Update</button>
+                    <div class="action-buttons">
+                        <button class="btn-sm btn-info" onclick="adminDashboard.viewComplaint('${complaint.id}')">View</button>
+                    </div>
                 </td>
-            </tr>
-        `).join('');
+            `;
+            tbody.appendChild(row);
+        });
     }
 
-    renderCardView() {
-        const container = document.getElementById('complaints-cards');
+    renderUsers() {
+        const tbody = document.getElementById('users-tbody');
+        const roleFilter = document.getElementById('users-role-filter')?.value || 'all';
         
-        if (this.filteredComplaints.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <h3>No complaints found</h3>
-                    <p>No complaints match the current filters</p>
-                </div>
+        let filteredUsers = this.users;
+        
+        if (roleFilter !== 'all') {
+            filteredUsers = filteredUsers.filter(u => u.role === roleFilter);
+        }
+        
+        if (!tbody) return;
+        
+        tbody.innerHTML = '';
+        
+        filteredUsers.forEach(user => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><strong>${user.id}</strong></td>
+                <td>${user.name}</td>
+                <td><span class="role-badge ${user.role}">${this.getRoleName(user.role)}</span></td>
+                <td>${user.department || 'Not Assigned'}</td>
+                <td><span class="status-badge ${user.isActive !== false ? 'active' : 'inactive'}">${user.isActive !== false ? 'Active' : 'Inactive'}</span></td>
+                <td>${user.registrationDate ? this.formatDate(user.registrationDate) : 'N/A'}</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn-sm btn-info" onclick="adminDashboard.editUser('${user.id}')">Edit</button>
+                        <button class="btn-sm btn-secondary" onclick="adminDashboard.toggleUserStatus('${user.id}')">${user.isActive !== false ? 'Deactivate' : 'Activate'}</button>
+                    </div>
+                </td>
             `;
+            tbody.appendChild(row);
+        });
+    }
+
+    renderSignups() {
+        const tbody = document.getElementById('signups-tbody');
+        const roleFilter = document.getElementById('signups-role-filter')?.value || 'all';
+        
+        let filteredSignups = this.signupRequests;
+        
+        if (roleFilter !== 'all') {
+            filteredSignups = filteredSignups.filter(s => s.role === roleFilter);
+        }
+        
+        if (!tbody) return;
+        
+        tbody.innerHTML = '';
+        
+        filteredSignups.forEach(signup => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><strong>${signup.id}</strong></td>
+                <td>${signup.name}</td>
+                <td>${signup.employeeId}</td>
+                <td><span class="role-badge ${signup.role}">${this.getRoleName(signup.role)}</span></td>
+                <td>${signup.department || 'Not Specified'}</td>
+                <td>${this.formatDate(signup.requestDate)}</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn-sm btn-info" onclick="adminDashboard.viewSignupRequest('${signup.id}')">View</button>
+                        <button class="btn-sm btn-primary" onclick="adminDashboard.approveSignupRequest('${signup.id}')">Approve</button>
+                        <button class="btn-sm btn-secondary" onclick="adminDashboard.rejectSignupRequest('${signup.id}')">Reject</button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    showAddUserModal() {
+        document.getElementById('add-user-modal').style.display = 'block';
+    }
+
+    addUser() {
+        const userId = document.getElementById('new-user-id').value.trim();
+        const name = document.getElementById('new-user-name').value.trim();
+        const role = document.getElementById('new-user-role').value;
+        const email = document.getElementById('new-user-email').value.trim();
+        const department = document.getElementById('new-user-department').value;
+        const password = document.getElementById('new-user-password').value;
+
+        if (!userId || !name || !role || !email || !password) {
+            alert('Please fill in all required fields');
             return;
         }
 
-        container.innerHTML = this.filteredComplaints.map(complaint => `
-            <div class="complaint-card" onclick="adminDashboard.showComplaintDetails('${complaint.id}')">
-                <div class="card-header">
-                    <div class="card-id">${complaint.id}</div>
-                    <span class="status-badge status-${complaint.status}">${this.getStatusDisplayName(complaint.status)}</span>
+        // Check if user ID already exists
+        if (this.users.find(u => u.id === userId)) {
+            alert('User ID already exists');
+            return;
+        }
+
+        const newUser = {
+            id: userId,
+            name: name,
+            role: role,
+            email: email,
+            department: department,
+            password: password,
+            isActive: true,
+            registrationDate: new Date().toISOString(),
+            createdBy: this.currentUser.id,
+            permissions: this.getPermissionsForRole(role)
+        };
+
+        this.users.push(newUser);
+        localStorage.setItem('iala_users', JSON.stringify(this.users));
+        
+        this.renderUsers();
+        this.updateStats();
+        this.closeModal('add-user-modal');
+        
+        // Clear form
+        document.getElementById('add-user-form').reset();
+        
+        alert(`User ${name} has been added successfully`);
+    }
+
+    viewSignupRequest(signupId) {
+        const signup = this.signupRequests.find(s => s.id === signupId);
+        if (!signup) return;
+
+        this.currentSignupId = signupId;
+        
+        const content = document.getElementById('signup-detail-content');
+        content.innerHTML = `
+            <div class="signup-details">
+                <h4>Signup Request: ${signup.id}</h4>
+                <div class="detail-grid">
+                    <div class="detail-row">
+                        <span class="detail-label">Name:</span>
+                        <span>${signup.name}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Employee ID:</span>
+                        <span>${signup.employeeId}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Requested Role:</span>
+                        <span class="role-badge ${signup.role}">${this.getRoleName(signup.role)}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Email:</span>
+                        <span>${signup.email}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Mobile:</span>
+                        <span>${signup.mobile}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Department:</span>
+                        <span>${signup.department || 'Not Specified'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Area:</span>
+                        <span>${signup.area || 'Not Specified'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Request Date:</span>
+                        <span>${this.formatDate(signup.requestDate)}</span>
+                    </div>
                 </div>
-                <div class="card-category">${this.getCategoryDisplayName(complaint.category)}</div>
-                <div class="card-description">${complaint.description}</div>
-                <div class="card-footer">
-                    <span>${complaint.assignedTeam || 'Unassigned'}</span>
-                    <span>${this.formatDate(complaint.submittedAt)}</span>
+                
+                <div class="justification-section">
+                    <h5>Justification:</h5>
+                    <p>${signup.justification}</p>
+                </div>
+                
+                <div class="supervisor-section">
+                    <h5>Supervisor/Reference:</h5>
+                    <p>${signup.supervisor}</p>
                 </div>
             </div>
-        `).join('');
+        `;
+        
+        document.getElementById('signup-detail-modal').style.display = 'block';
     }
 
-    switchView(view) {
-        this.currentView = view;
+    approveSignupRequest(signupId) {
+        const signup = this.signupRequests.find(s => s.id === signupId);
+        if (!signup) return;
+
+        if (confirm(`Are you sure you want to approve the signup request for ${signup.name}?`)) {
+            // Create approved user account
+            const approvedUser = {
+                id: signup.id,
+                employeeId: signup.employeeId,
+                password: signup.password,
+                role: signup.role,
+                name: signup.name,
+                email: signup.email,
+                mobile: signup.mobile,
+                department: signup.department,
+                area: signup.area,
+                supervisor: signup.supervisor,
+                status: 'approved',
+                isActive: true,
+                approvedBy: this.currentUser.id,
+                approvalDate: new Date().toISOString(),
+                requestDate: signup.requestDate,
+                permissions: this.getPermissionsForRole(signup.role)
+            };
+
+            // Add to users list
+            this.users.push(approvedUser);
+            localStorage.setItem('iala_users', JSON.stringify(this.users));
+
+            // Remove from pending requests
+            this.signupRequests = this.signupRequests.filter(s => s.id !== signupId);
+            localStorage.setItem('iala_pending_signups', JSON.stringify(this.signupRequests));
+
+            this.renderUsers();
+            this.renderSignups();
+            this.updateStats();
+            
+            alert(`Signup request for ${signup.name} has been approved`);
+        }
+    }
+
+    rejectSignupRequest(signupId) {
+        const signup = this.signupRequests.find(s => s.id === signupId);
+        if (!signup) return;
+
+        const reason = prompt(`Enter reason for rejecting ${signup.name}'s request:`);
+        if (reason === null) return; // User cancelled
+
+        if (confirm(`Are you sure you want to reject the signup request for ${signup.name}?`)) {
+            // Move to rejected requests
+            const rejectedRequests = JSON.parse(localStorage.getItem('iala_rejected_signups') || '[]');
+            signup.status = 'rejected';
+            signup.rejectionReason = reason;
+            signup.rejectedBy = this.currentUser.id;
+            signup.rejectionDate = new Date().toISOString();
+            rejectedRequests.push(signup);
+            localStorage.setItem('iala_rejected_signups', JSON.stringify(rejectedRequests));
+
+            // Remove from pending requests
+            this.signupRequests = this.signupRequests.filter(s => s.id !== signupId);
+            localStorage.setItem('iala_pending_signups', JSON.stringify(this.signupRequests));
+
+            this.renderSignups();
+            this.updateStats();
+            
+            alert(`Signup request for ${signup.name} has been rejected`);
+        }
+    }
+
+    viewComplaint(complaintId) {
+        const complaint = this.complaints.find(c => c.id === complaintId);
+        if (!complaint) return;
         
-        // Update toggle buttons
-        document.querySelectorAll('.toggle-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.view === view);
-        });
+        const content = document.getElementById('complaint-detail-content');
+        content.innerHTML = `
+            <div class="complaint-details">
+                <h4>Complaint Details: ${complaint.id}</h4>
+                <div class="detail-grid">
+                    <div class="detail-row">
+                        <span class="detail-label">Category:</span>
+                        <span>${this.getCategoryName(complaint.category)}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Status:</span>
+                        <span class="status-badge ${complaint.status}">${this.getStatusName(complaint.status)}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Location:</span>
+                        <span>${complaint.location}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Submitted:</span>
+                        <span>${this.formatDate(complaint.submittedDate)}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Citizen:</span>
+                        <span>${complaint.citizenName || 'N/A'} ${complaint.citizenPhone ? `(${complaint.citizenPhone})` : ''}</span>
+                    </div>
+                    ${complaint.assignedTo ? `
+                    <div class="detail-row">
+                        <span class="detail-label">Assigned To:</span>
+                        <span>${this.getAssignedToName(complaint.assignedTo)}</span>
+                    </div>
+                    ` : ''}
+                </div>
+                <p><strong>Description:</strong></p>
+                <p>${complaint.description}</p>
+            </div>
+            
+            ${complaint.notes && complaint.notes.length > 0 ? `
+            <div style="margin-top: 1rem;">
+                <h4>Activity Log:</h4>
+                ${complaint.notes.map(note => `
+                    <div style="background: #f8f9fa; padding: 0.75rem; margin: 0.5rem 0; border-radius: 4px; border-left: 3px solid #333;">
+                        <div style="font-size: 0.8rem; color: #666; margin-bottom: 0.25rem;">
+                            ${this.formatDate(note.timestamp)} - ${note.author}
+                        </div>
+                        <div>${note.content}</div>
+                    </div>
+                `).join('')}
+            </div>
+            ` : ''}
+        `;
+        
+        document.getElementById('complaint-detail-modal').style.display = 'block';
+    }
 
-        // Show/hide views
-        document.getElementById('table-view').style.display = view === 'table' ? 'block' : 'none';
-        document.getElementById('cards-view').style.display = view === 'cards' ? 'block' : 'none';
+    generateReport() {
+        const reportType = document.getElementById('report-type').value;
+        const reportPeriod = document.getElementById('report-period').value;
+        
+        const reportContent = document.getElementById('report-content');
+        
+        let reportData = '';
+        
+        switch (reportType) {
+            case 'complaints':
+                reportData = this.generateComplaintsReport(reportPeriod);
+                break;
+            case 'users':
+                reportData = this.generateUsersReport(reportPeriod);
+                break;
+            case 'performance':
+                reportData = this.generatePerformanceReport(reportPeriod);
+                break;
+        }
+        
+        reportContent.innerHTML = reportData;
+    }
 
+    generateComplaintsReport(period) {
+        const filteredComplaints = this.filterComplaintsByPeriod(period);
+        const totalComplaints = filteredComplaints.length;
+        const completedComplaints = filteredComplaints.filter(c => c.status === 'completed').length;
+        const pendingComplaints = filteredComplaints.filter(c => c.status !== 'completed').length;
+        
+        return `
+            <div class="report-content">
+                <h3>Complaints Report - ${this.getPeriodName(period)}</h3>
+                <div class="report-stats">
+                    <div class="report-stat">
+                        <h4>${totalComplaints}</h4>
+                        <p>Total Complaints</p>
+                    </div>
+                    <div class="report-stat">
+                        <h4>${completedComplaints}</h4>
+                        <p>Completed</p>
+                    </div>
+                    <div class="report-stat">
+                        <h4>${pendingComplaints}</h4>
+                        <p>Pending</p>
+                    </div>
+                    <div class="report-stat">
+                        <h4>${totalComplaints > 0 ? Math.round((completedComplaints / totalComplaints) * 100) : 0}%</h4>
+                        <p>Completion Rate</p>
+                    </div>
+                </div>
+                
+                <div class="report-details">
+                    <h4>Category Breakdown:</h4>
+                    ${this.getCategoryBreakdown(filteredComplaints)}
+                </div>
+            </div>
+        `;
+    }
+
+    generateUsersReport(period) {
+        const activeUsers = this.users.filter(u => u.isActive !== false).length;
+        const inactiveUsers = this.users.filter(u => u.isActive === false).length;
+        
+        return `
+            <div class="report-content">
+                <h3>Users Report - ${this.getPeriodName(period)}</h3>
+                <div class="report-stats">
+                    <div class="report-stat">
+                        <h4>${this.users.length}</h4>
+                        <p>Total Users</p>
+                    </div>
+                    <div class="report-stat">
+                        <h4>${activeUsers}</h4>
+                        <p>Active Users</p>
+                    </div>
+                    <div class="report-stat">
+                        <h4>${inactiveUsers}</h4>
+                        <p>Inactive Users</p>
+                    </div>
+                    <div class="report-stat">
+                        <h4>${this.signupRequests.length}</h4>
+                        <p>Pending Signups</p>
+                    </div>
+                </div>
+                
+                <div class="report-details">
+                    <h4>Role Distribution:</h4>
+                    ${this.getRoleBreakdown(this.users)}
+                </div>
+            </div>
+        `;
+    }
+
+    generatePerformanceReport(period) {
+        const filteredComplaints = this.filterComplaintsByPeriod(period);
+        const avgResolutionTime = this.calculateAverageResolutionTime(filteredComplaints);
+        
+        return `
+            <div class="report-content">
+                <h3>Performance Report - ${this.getPeriodName(period)}</h3>
+                <div class="report-stats">
+                    <div class="report-stat">
+                        <h4>${avgResolutionTime}</h4>
+                        <p>Avg Resolution Time (days)</p>
+                    </div>
+                    <div class="report-stat">
+                        <h4>${this.users.filter(u => u.role === 'field-manager').length}</h4>
+                        <p>Field Managers</p>
+                    </div>
+                    <div class="report-stat">
+                        <h4>${this.users.filter(u => u.role === 'employee').length}</h4>
+                        <p>Employees</p>
+                    </div>
+                    <div class="report-stat">
+                        <h4>${this.users.filter(u => u.role === 'officer-manager').length}</h4>
+                        <p>Officer Managers</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Filter and utility methods
+    filterComplaints() {
         this.renderComplaints();
     }
 
-    showComplaintDetails(complaintId) {
-        const complaint = this.complaints.find(c => c.id === complaintId);
-        if (!complaint) return;
-
-        this.selectedComplaint = complaint;
-        
-        const modalBody = document.getElementById('modal-body');
-        modalBody.innerHTML = `
-            <div class="detail-field">
-                <div class="detail-label">Complaint ID</div>
-                <div class="detail-value">${complaint.id}</div>
-            </div>
-            
-            <div class="detail-field">
-                <div class="detail-label">Category</div>
-                <div class="detail-value">${this.getCategoryDisplayName(complaint.category)}</div>
-            </div>
-            
-            <div class="detail-field">
-                <div class="detail-label">Status</div>
-                <div class="detail-value">
-                    <span class="status-badge status-${complaint.status}">${this.getStatusDisplayName(complaint.status)}</span>
-                </div>
-            </div>
-            
-            <div class="detail-field">
-                <div class="detail-label">Description</div>
-                <div class="detail-value">${complaint.description}</div>
-            </div>
-            
-            <div class="detail-field">
-                <div class="detail-label">Location</div>
-                <div class="detail-value">${complaint.location || 'Not specified'}</div>
-            </div>
-            
-            <div class="detail-field">
-                <div class="detail-label">Assigned Team</div>
-                <div class="detail-value">${complaint.assignedTeam || 'Unassigned'}</div>
-            </div>
-            
-            <div class="detail-field">
-                <div class="detail-label">Language</div>
-                <div class="detail-value">
-                    <span class="language-indicator">${(complaint.language || 'en').toUpperCase()}</span>
-                    ${this.getLanguageDisplayName(complaint.language)}
-                </div>
-            </div>
-            
-            <div class="detail-field">
-                <div class="detail-label">Submitted At</div>
-                <div class="detail-value">${this.formatDateTime(complaint.submittedAt)}</div>
-            </div>
-            
-            ${complaint.lastUpdated ? `
-                <div class="detail-field">
-                    <div class="detail-label">Last Updated</div>
-                    <div class="detail-value">${this.formatDateTime(complaint.lastUpdated)}</div>
-                </div>
-            ` : ''}
-            
-            ${complaint.notes ? `
-                <div class="detail-field">
-                    <div class="detail-label">Notes</div>
-                    <div class="detail-value">${complaint.notes}</div>
-                </div>
-            ` : ''}
-        `;
-
-        // Set current status in dropdown
-        document.getElementById('status-update').value = '';
-        
-        document.getElementById('complaint-modal').classList.add('active');
+    filterUsers() {
+        this.renderUsers();
     }
 
-    closeModal() {
-        document.getElementById('complaint-modal').classList.remove('active');
-        this.selectedComplaint = null;
+    filterSignups() {
+        this.renderSignups();
     }
 
-    async updateComplaintStatus() {
-        if (!this.selectedComplaint) return;
-
-        const newStatus = document.getElementById('status-update').value;
-        if (!newStatus) return;
-
-        try {
-            // Update via integration layer
-            if (window.ghmc_integration) {
-                await window.ghmc_integration.mockAPI.updateComplaintStatus(
-                    this.selectedComplaint.id,
-                    newStatus,
-                    `Status updated by admin to ${newStatus}`
-                );
-            } else {
-                // Fallback: update locally
-                this.selectedComplaint.status = newStatus;
-                this.selectedComplaint.lastUpdated = new Date().toISOString();
-                localStorage.setItem('ghmc-ai-complaints', JSON.stringify(this.complaints));
-            }
-
-            this.closeModal();
-            this.loadComplaints();
-            this.showSuccess(`Complaint ${this.selectedComplaint.id} status updated to ${newStatus}`);
-        } catch (error) {
-            console.error('Error updating complaint status:', error);
-            this.showError('Failed to update complaint status');
+    filterComplaintsByPeriod(period) {
+        const now = new Date();
+        let startDate;
+        
+        switch (period) {
+            case 'today':
+                startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                break;
+            case 'week':
+                startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                break;
+            case 'month':
+                startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                break;
+            case 'quarter':
+                const quarter = Math.floor(now.getMonth() / 3);
+                startDate = new Date(now.getFullYear(), quarter * 3, 1);
+                break;
+            default:
+                return this.complaints;
         }
-    }
-
-    quickStatusUpdate(complaintId) {
-        this.showComplaintDetails(complaintId);
-    }
-
-    exportData() {
-        const csvContent = this.generateCSV();
-        const blob = new Blob([csvContent], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
         
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `ghmc-ai-complaints-${new Date().toISOString().split('T')[0]}.csv`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
+        return this.complaints.filter(c => new Date(c.submittedDate) >= startDate);
     }
 
-    generateCSV() {
-        const headers = [
-            'Complaint ID',
-            'Category',
-            'Status',
-            'Description',
-            'Location',
-            'Assigned Team',
-            'Language',
-            'Submitted At',
-            'Last Updated'
-        ];
-
-        const rows = this.filteredComplaints.map(complaint => [
-            complaint.id,
-            this.getCategoryDisplayName(complaint.category),
-            this.getStatusDisplayName(complaint.status),
-            `"${complaint.description.replace(/"/g, '""')}"`,
-            complaint.location || '',
-            complaint.assignedTeam || '',
-            this.getLanguageDisplayName(complaint.language),
-            this.formatDateTime(complaint.submittedAt),
-            complaint.lastUpdated ? this.formatDateTime(complaint.lastUpdated) : ''
-        ]);
-
-        return [headers, ...rows].map(row => row.join(',')).join('\n');
+    getCategoryBreakdown(complaints) {
+        const categories = {};
+        complaints.forEach(c => {
+            categories[c.category] = (categories[c.category] || 0) + 1;
+        });
+        
+        return Object.entries(categories)
+            .map(([category, count]) => `<p>${this.getCategoryName(category)}: ${count}</p>`)
+            .join('');
     }
 
-    startAutoRefresh() {
-        // Refresh every 30 seconds
-        this.refreshInterval = setInterval(() => {
-            this.loadComplaints();
-            this.loadPendingSignups();
-        }, 30000);
+    getRoleBreakdown(users) {
+        const roles = {};
+        users.forEach(u => {
+            roles[u.role] = (roles[u.role] || 0) + 1;
+        });
+        
+        return Object.entries(roles)
+            .map(([role, count]) => `<p>${this.getRoleName(role)}: ${count}</p>`)
+            .join('');
     }
 
-    stopAutoRefresh() {
-        if (this.refreshInterval) {
-            clearInterval(this.refreshInterval);
-            this.refreshInterval = null;
-        }
+    calculateAverageResolutionTime(complaints) {
+        const completedComplaints = complaints.filter(c => c.status === 'completed' && c.finalizedDate);
+        if (completedComplaints.length === 0) return 'N/A';
+        
+        const totalTime = completedComplaints.reduce((sum, c) => {
+            const submitted = new Date(c.submittedDate);
+            const completed = new Date(c.finalizedDate);
+            return sum + (completed - submitted);
+        }, 0);
+        
+        const avgTime = totalTime / completedComplaints.length;
+        return Math.round(avgTime / (1000 * 60 * 60 * 24)); // Convert to days
     }
 
-    updateLastUpdatedTime() {
-        document.getElementById('last-updated-time').textContent = new Date().toLocaleTimeString();
+    exportReport() {
+        alert('Export functionality would be implemented here');
     }
 
     // Utility methods
-    getCategoryDisplayName(category) {
-        const categoryNames = {
+    getCategoryName(category) {
+        const categories = {
             'street-light': 'Street Light',
             'pothole': 'Road Pothole',
-            'garbage': 'Garbage Collection',
+            'garbage': 'Garbage',
             'water-supply': 'Water Supply',
             'drainage': 'Drainage',
-            'cctv': 'CCTV',
-            'incident': 'Incident Reporting',
-            'fogging': 'Fogging',
-            'green-belt': 'Green Belt'
+            'cctv': 'CCTV'
         };
-        return categoryNames[category] || category;
+        return categories[category] || category;
     }
 
-    getStatusDisplayName(status) {
-        const statusNames = {
-            'submitted': 'Submitted',
+    getStatusName(status) {
+        const statuses = {
+            'new': 'New',
             'assigned': 'Assigned',
             'in-progress': 'In Progress',
-            'resolved': 'Resolved',
-            'escalated': 'Escalated'
+            'completed': 'Completed'
         };
-        return statusNames[status] || status;
+        return statuses[status] || status;
     }
 
-    getLanguageDisplayName(language) {
-        const languageNames = {
-            'en': 'English',
-            'hi': 'Hindi',
-            'te': 'Telugu',
-            'ta': 'Tamil',
-            'kn': 'Kannada',
-            'ml': 'Malayalam'
-        };
-        return languageNames[language] || 'English';
-    }
-
-    getRoleDisplayName(role) {
-        const roleNames = {
+    getRoleName(role) {
+        const roles = {
             'admin': 'Administrator',
             'officer-manager': 'Officer Manager',
             'field-manager': 'Field Manager',
             'employee': 'Employee',
-            'user': 'Normal User'
+            'user': 'User'
         };
-        return roleNames[role] || role;
+        return roles[role] || role;
     }
 
-    getDepartmentDisplayName(department) {
-        const departmentNames = {
-            'electrical': 'Electrical',
-            'road-maintenance': 'Road Maintenance',
-            'waste-management': 'Waste Management',
-            'water-supply': 'Water Supply',
-            'drainage': 'Drainage',
-            'security': 'Security',
-            'health': 'Health',
-            'parks': 'Parks & Gardens',
-            'general': 'General Services'
+    getPeriodName(period) {
+        const periods = {
+            'today': 'Today',
+            'week': 'This Week',
+            'month': 'This Month',
+            'quarter': 'This Quarter'
         };
-        return departmentNames[department] || department;
+        return periods[period] || period;
     }
 
-    getAreaDisplayName(area) {
-        const areaNames = {
-            'banjara-hills': 'Banjara Hills',
-            'jubilee-hills': 'Jubilee Hills',
-            'madhapur': 'Madhapur',
-            'gachibowli': 'Gachibowli',
-            'kondapur': 'Kondapur',
-            'kukatpally': 'Kukatpally',
-            'secunderabad': 'Secunderabad',
-            'hitech-city': 'Hitech City'
+    getAssignedToName(assignedTo) {
+        const user = this.users.find(u => u.id === assignedTo);
+        return user ? user.name : assignedTo;
+    }
+
+    getPermissionsForRole(role) {
+        const rolePermissions = {
+            'admin': ['all'],
+            'officer-manager': [
+                'view_all_complaints', 'assign_complaints', 'reassign_complaints',
+                'escalate_complaints', 'manage_field_managers', 'generate_reports',
+                'bulk_operations', 'view_analytics', 'manage_priorities', 'approve_resolutions'
+            ],
+            'field-manager': [
+                'view_assigned_complaints', 'update_complaint_status', 'upload_proof',
+                'add_progress_notes', 'request_escalation', 'view_area_complaints',
+                'mark_resolved', 'update_location'
+            ],
+            'employee': [
+                'view_assigned_tasks', 'update_task_status', 'upload_completion_proof',
+                'add_work_notes', 'view_task_details', 'mark_task_completed'
+            ]
         };
-        return areaNames[area] || area;
+        return rolePermissions[role] || [];
     }
 
     formatDate(dateString) {
-        if (!dateString) return '';
-        return new Date(dateString).toLocaleDateString();
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-IN', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
     }
 
-    formatDateTime(dateString) {
-        if (!dateString) return '';
-        return new Date(dateString).toLocaleString();
-    }
-
-    showSuccess(message) {
-        // Simple success notification
-        const notification = document.createElement('div');
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #333;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 6px;
-            z-index: 10000;
-            font-size: 14px;
-        `;
-        notification.textContent = message;
-        document.body.appendChild(notification);
-
-        setTimeout(() => {
-            document.body.removeChild(notification);
-        }, 3000);
-    }
-
-    showError(message) {
-        // Simple error notification
-        const notification = document.createElement('div');
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #666;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 6px;
-            z-index: 10000;
-            font-size: 14px;
-        `;
-        notification.textContent = message;
-        document.body.appendChild(notification);
-
-        setTimeout(() => {
-            document.body.removeChild(notification);
-        }, 5000);
+    closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
     }
 }
 
-// Initialize dashboard when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    window.adminDashboard = new GHMCAdminDashboard();
-});
-
-// Cleanup on page unload
-window.addEventListener('beforeunload', () => {
-    if (window.adminDashboard) {
-        window.adminDashboard.stopAutoRefresh();
+// Global functions
+// Global logout function - multiple approaches for compatibility
+function logoutUser() {
+    console.log('Administrator logout function called'); // Debug log
+    
+    if (confirm('Are you sure you want to logout?')) {
+        try {
+            // Clear all session data
+            localStorage.removeItem('iala_session');
+            localStorage.removeItem('iala_user');
+            localStorage.removeItem('iala_session_data');
+            localStorage.removeItem('iala_user_session');
+            localStorage.removeItem('current_dashboard');
+            localStorage.removeItem('field_manager_session');
+            
+            // Clear session storage as well
+            sessionStorage.clear();
+            
+            console.log('Administrator session data cleared, redirecting to login');
+            
+            // Force redirect to login page
+            window.location.replace('auth-system.html');
+            
+        } catch (error) {
+            console.error('Error during Administrator logout:', error);
+            // Force redirect even if there's an error
+            alert('Logging out...');
+            window.location.href = 'auth-system.html';
+        }
     }
+}
+
+// Force logout without confirmation
+function forceLogout() {
+    console.log('Administrator force logout called');
+    localStorage.clear();
+    sessionStorage.clear();
+    window.location.href = 'auth-system.html';
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+
+// Initialize dashboard
+let adminDashboard;
+document.addEventListener('DOMContentLoaded', () => {
+    adminDashboard = new AdminDashboard();
+    
+    // Ensure logout functions are globally accessible
+    window.logoutUser = logoutUser;
+    window.forceLogout = forceLogout;
+    
+    console.log('Administrator dashboard loaded, logout functions available:', {
+        logoutUser: typeof window.logoutUser,
+        forceLogout: typeof window.forceLogout
+    });
 });

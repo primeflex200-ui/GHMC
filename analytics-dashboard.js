@@ -127,7 +127,7 @@ class AnalyticsDashboard {
             const submittedAt = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000);
             
             complaints.push({
-                id: `GHMC2024${String(i + 1).padStart(3, '0')}`,
+                id: `IALA2024${String(i + 1).padStart(3, '0')}`,
                 category: categories[Math.floor(Math.random() * categories.length)],
                 status: statuses[Math.floor(Math.random() * statuses.length)],
                 priority: priorities[Math.floor(Math.random() * priorities.length)],
@@ -203,7 +203,7 @@ class AnalyticsDashboard {
     getRealTimeActivity() {
         const activities = [
             { type: 'complaint', text: 'New complaint submitted: Street light issue in Banjara Hills', time: '2 minutes ago' },
-            { type: 'status', text: 'Complaint GHMC2024156 marked as resolved', time: '5 minutes ago' },
+            { type: 'status', text: 'Complaint IALA2024156 marked as resolved', time: '5 minutes ago' },
             { type: 'assignment', text: 'Complaint assigned to Field Manager Rajesh Kumar', time: '8 minutes ago' },
             { type: 'ai', text: 'AI assistant captured complaint in Telugu', time: '12 minutes ago' },
             { type: 'escalation', text: 'Critical complaint escalated to Officer Manager', time: '15 minutes ago' }
@@ -696,7 +696,7 @@ class AnalyticsDashboard {
         const newActivities = [
             { type: 'complaint', text: 'New complaint: Water supply issue in Kondapur', time: 'Just now' },
             { type: 'ai', text: 'AI assistant processed complaint in Hindi', time: '1 minute ago' },
-            { type: 'status', text: 'Complaint GHMC2024789 updated to in-progress', time: '3 minutes ago' }
+            { type: 'status', text: 'Complaint IALA2024789 updated to in-progress', time: '3 minutes ago' }
         ];
         
         const randomActivity = newActivities[Math.floor(Math.random() * newActivities.length)];

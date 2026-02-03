@@ -190,7 +190,7 @@ class MobileFieldApp {
     generateDemoComplaints() {
         return [
             {
-                id: 'GHMC2024301',
+                id: 'IALA2024301',
                 category: 'street-light',
                 description: 'Street light not working on Road No. 12',
                 location: 'Road No. 12, Banjara Hills',
@@ -202,7 +202,7 @@ class MobileFieldApp {
                 coordinates: { lat: 17.4239, lng: 78.4738 }
             },
             {
-                id: 'GHMC2024302',
+                id: 'IALA2024302',
                 category: 'pothole',
                 description: 'Large pothole causing traffic issues',
                 location: 'Jubilee Hills Main Road',
@@ -214,7 +214,7 @@ class MobileFieldApp {
                 coordinates: { lat: 17.4326, lng: 78.4071 }
             },
             {
-                id: 'GHMC2024303',
+                id: 'IALA2024303',
                 category: 'garbage',
                 description: 'Garbage not collected for 3 days',
                 location: 'Madhapur Colony, Block A',

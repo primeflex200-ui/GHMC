@@ -2,564 +2,614 @@
 class FieldManagerDashboard {
     constructor() {
         this.currentUser = null;
-        this.assignedComplaints = [];
-        this.filteredComplaints = [];
-        this.selectedComplaint = null;
+        this.workAssignments = [];
+        this.currentWorkId = null;
         this.init();
     }
 
     init() {
+        this.checkAuthentication();
         this.loadUserData();
-        this.setupEventListeners();
-        this.loadAssignedComplaints();
+        this.loadWorkAssignments();
         this.updateStats();
+        this.setupEventListeners();
+        
+        // Add page reload handler to maintain dashboard state
+        window.addEventListener('beforeunload', () => {
+            if (this.currentUser && this.currentUser.role === 'field-manager') {
+                localStorage.setItem('field_manager_session', JSON.stringify({
+                    user: this.currentUser,
+                    timestamp: Date.now()
+                }));
+            }
+        });
     }
 
-    loadUserData() {
-        if (!window.rolePermissions) {
-            console.error('Role permissions not loaded');
-            return;
-        }
+    checkAuthentication() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session');
+        const userData = localStorage.getItem('iala_user');
 
-        this.currentUser = window.rolePermissions.getCurrentUser();
-        
-        if (!this.currentUser || this.currentUser.role !== 'field-manager') {
+        if (!sessionId || !userData) {
             window.location.href = 'auth-system.html';
             return;
         }
 
-        // Update UI with user info
-        document.getElementById('user-name').textContent = this.currentUser.name;
-        document.getElementById('user-area').textContent = `Area: ${this.currentUser.area || 'Not assigned'}`;
-    }
-
-    setupEventListeners() {
-        // Logout
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            if (window.rolePermissions) {
-                window.rolePermissions.logout();
-            }
-        });
-
-        // Quick actions
-        document.getElementById('view-assigned').addEventListener('click', () => {
-            this.scrollToComplaints();
-        });
-
-        document.getElementById('update-status').addEventListener('click', () => {
-            this.showUpdateModal();
-        });
-
-        document.getElementById('upload-proof').addEventListener('click', () => {
-            this.showUploadProofDialog();
-        });
-
-        document.getElementById('mobile-app').addEventListener('click', () => {
-            this.showMobileAppInfo();
-        });
-
-        // Filters
-        document.getElementById('priority-filter').addEventListener('change', () => {
-            this.applyFilters();
-        });
-
-        document.getElementById('status-filter').addEventListener('change', () => {
-            this.applyFilters();
-        });
-
-        document.getElementById('refresh-complaints').addEventListener('click', () => {
-            this.loadAssignedComplaints();
-        });
-
-        // Modal controls
-        document.getElementById('close-update-modal').addEventListener('click', () => {
-            this.closeUpdateModal();
-        });
-
-        document.getElementById('cancel-update').addEventListener('click', () => {
-            this.closeUpdateModal();
-        });
-
-        document.getElementById('submit-update').addEventListener('click', () => {
-            this.submitStatusUpdate();
-        });
-
-        // Form handling
-        document.getElementById('update-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.submitStatusUpdate();
-        });
-    }
-
-    async loadAssignedComplaints() {
         try {
-            // Get complaints assigned to this field manager
-            const allComplaints = this.getAllComplaints();
-            
-            this.assignedComplaints = allComplaints.filter(complaint => 
-                complaint.assignedTo === this.currentUser.id ||
-                (complaint.assignedTeam && complaint.assignedTeam.includes(this.currentUser.department)) ||
-                (complaint.tags && complaint.tags.location && 
-                 complaint.tags.location.includes(this.currentUser.area?.toLowerCase().replace(/\s+/g, '-')))
-            );
-
-            // Add demo complaints if none exist
-            if (this.assignedComplaints.length === 0) {
-                this.assignedComplaints = this.generateDemoComplaints();
+            this.currentUser = JSON.parse(userData);
+            if (this.currentUser.role !== 'field-manager') {
+                alert('Access denied. This dashboard is for field managers only.');
+                window.location.href = 'auth-system.html';
+                return;
             }
-
-            this.applyFilters();
-            this.updateStats();
+            
+            // Store current page for reload persistence
+            localStorage.setItem('current_dashboard', 'field-dashboard.html');
+            
         } catch (error) {
-            console.error('Error loading complaints:', error);
-            this.showError('Failed to load complaints');
+            console.error('Error parsing user data:', error);
+            window.location.href = 'auth-system.html';
         }
     }
 
-    generateDemoComplaints() {
-        const demoComplaints = [
+    loadUserData() {
+        if (this.currentUser) {
+            document.getElementById('user-name').textContent = this.currentUser.name || 'Field Manager';
+            document.getElementById('user-area').textContent = `Area: ${this.currentUser.area || 'Not Assigned'}`;
+        }
+    }
+
+    loadWorkAssignments() {
+        // Always generate fresh demo data for field manager dashboard
+        this.generateDemoWork();
+        this.renderWork();
+        this.updateStats();
+    }
+
+    generateDemoWork() {
+        // SAMPLE DATA FOR DEMO PURPOSES ONLY - Always generate fresh data
+        // Summary: 3 total, 2 not started, 1 in progress, 1 completed today
+        
+        this.workAssignments = [
+            // Work 1: Not Started
             {
-                id: 'GHMC2024101',
+                id: 'IALA-001',
                 category: 'street-light',
-                description: 'Street light not working on Road No. 12, Banjara Hills',
-                location: 'Road No. 12, Banjara Hills',
-                priority: 'high',
+                location: 'Kukatpally',
+                description: 'Street light not working on main road',
+                assignedDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
                 status: 'assigned',
-                assignedTo: this.currentUser.id,
-                assignedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-                submittedAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(), // 4 hours ago
-                tags: {
-                    category: ['street-light'],
-                    priority: ['high'],
-                    location: ['banjara-hills']
-                }
-            },
-            {
-                id: 'GHMC2024102',
-                category: 'pothole',
-                description: 'Large pothole causing traffic issues on main road',
-                location: 'Jubilee Hills Main Road',
-                priority: 'medium',
-                status: 'in-progress',
-                assignedTo: this.currentUser.id,
-                assignedAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
-                submittedAt: new Date(Date.now() - 26 * 60 * 60 * 1000).toISOString(), // 26 hours ago
-                startedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-                tags: {
-                    category: ['pothole'],
-                    priority: ['medium'],
-                    location: ['jubilee-hills']
-                }
-            },
-            {
-                id: 'GHMC2024103',
-                category: 'garbage',
-                description: 'Garbage not collected for 3 days in residential area',
-                location: 'Madhapur Colony, Block A',
                 priority: 'high',
-                status: 'pending-verification',
                 assignedTo: this.currentUser.id,
-                assignedAt: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(), // 2 days ago
-                submittedAt: new Date(Date.now() - 50 * 60 * 60 * 1000).toISOString(), // 50 hours ago
-                completedAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(), // 1 hour ago
-                tags: {
-                    category: ['garbage'],
-                    priority: ['high'],
-                    location: ['madhapur']
+                assignedBy: 'emp001',
+                citizenName: 'Rajesh Kumar',
+                citizenPhone: '9876543210',
+                progressNotes: [],
+                completionDate: null,
+                completionTime: null,
+                completionImage: null
+            },
+            // Work 2: Not Started
+            {
+                id: 'IALA-004',
+                category: 'drainage',
+                location: 'Kondapur',
+                description: 'Blocked drainage causing water logging',
+                assignedDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
+                status: 'assigned',
+                priority: 'urgent',
+                assignedTo: this.currentUser.id,
+                assignedBy: 'emp001',
+                citizenName: 'Priya Sharma',
+                citizenPhone: '9876543211',
+                progressNotes: [],
+                completionDate: null,
+                completionTime: null,
+                completionImage: null
+            },
+            // Work 3: In Progress
+            {
+                id: 'IALA-002',
+                category: 'pothole',
+                location: 'Madhapur',
+                description: 'Large pothole on tech city road',
+                assignedDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
+                status: 'in-progress',
+                priority: 'high',
+                assignedTo: this.currentUser.id,
+                assignedBy: 'emp001',
+                citizenName: 'Suresh Reddy',
+                citizenPhone: '9876543212',
+                progressNotes: [
+                    {
+                        timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+                        author: this.currentUser.name || 'Field Manager',
+                        content: 'Started road repair work. Materials arranged.',
+                        statusChange: 'assigned → in-progress'
+                    }
+                ],
+                completionDate: null,
+                completionTime: null,
+                completionImage: null
+            },
+            // Work 4: Completed Today
+            {
+                id: 'IALA-003',
+                category: 'garbage',
+                location: 'Gachibowli',
+                description: 'Garbage collection point overflow',
+                assignedDate: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(), // 4 days ago
+                status: 'completed',
+                priority: 'high',
+                assignedTo: this.currentUser.id,
+                assignedBy: 'emp001',
+                citizenName: 'Anita Devi',
+                citizenPhone: '9876543213',
+                progressNotes: [
+                    {
+                        timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+                        author: this.currentUser.name || 'Field Manager',
+                        content: 'Started cleaning and waste removal.',
+                        statusChange: 'assigned → in-progress'
+                    },
+                    {
+                        timestamp: new Date().toISOString(),
+                        author: this.currentUser.name || 'Field Manager',
+                        content: 'Garbage collection completed. Area cleaned.',
+                        statusChange: 'in-progress → completed'
+                    }
+                ],
+                completionDate: new Date().toISOString().split('T')[0], // Today
+                completionTime: '14:30',
+                completionImage: {
+                    name: 'garbage_cleanup_completed.jpg',
+                    size: 1024 * 750,
+                    type: 'image/jpeg',
+                    lastModified: Date.now()
                 }
             }
         ];
-
-        return demoComplaints;
-    }
-
-    applyFilters() {
-        const priorityFilter = document.getElementById('priority-filter').value;
-        const statusFilter = document.getElementById('status-filter').value;
-
-        this.filteredComplaints = this.assignedComplaints.filter(complaint => {
-            const priorityMatch = !priorityFilter || complaint.priority === priorityFilter;
-            const statusMatch = !statusFilter || complaint.status === statusFilter;
-            return priorityMatch && statusMatch;
-        });
-
-        this.renderComplaints();
-    }
-
-    renderComplaints() {
-        const container = document.getElementById('complaints-list');
         
-        if (this.filteredComplaints.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <h3>No complaints found</h3>
-                    <p>No complaints match the current filters or you have no assigned complaints.</p>
-                </div>
-            `;
-            return;
-        }
+        // Don't save to localStorage - keep as demo data only
+        console.log('Generated demo work assignments:', this.workAssignments.length);
+    }
 
-        container.innerHTML = this.filteredComplaints.map(complaint => `
-            <div class="complaint-item" onclick="fieldDashboard.showComplaintDetails('${complaint.id}')">
-                <div class="complaint-header">
-                    <div class="complaint-id">${complaint.id}</div>
-                    <span class="complaint-priority priority-${complaint.priority}">${this.formatPriority(complaint.priority)}</span>
-                </div>
-                
-                <div class="complaint-meta">
-                    <span>${this.getCategoryDisplayName(complaint.category)}</span>
-                    <span>${complaint.location}</span>
-                    <span>Age: ${this.getComplaintAge(complaint.submittedAt)}</span>
-                </div>
-                
-                <div class="complaint-description">${complaint.description}</div>
-                
-                <div class="complaint-footer">
-                    <span class="complaint-status status-${complaint.status}">${this.getStatusDisplayName(complaint.status)}</span>
-                    <div class="complaint-actions">
-                        <button class="action-btn" onclick="event.stopPropagation(); fieldDashboard.updateComplaintStatus('${complaint.id}')">Update</button>
-                        <button class="action-btn" onclick="event.stopPropagation(); fieldDashboard.viewComplaintDetails('${complaint.id}')">Details</button>
+    renderWork() {
+        const tbody = document.getElementById('work-tbody');
+        const statusFilter = document.getElementById('status-filter').value;
+        const priorityFilter = document.getElementById('priority-filter').value;
+        
+        let filteredWork = this.workAssignments;
+        
+        if (statusFilter !== 'all') {
+            filteredWork = filteredWork.filter(w => w.status === statusFilter);
+        }
+        
+        if (priorityFilter !== 'all') {
+            filteredWork = filteredWork.filter(w => w.priority === priorityFilter);
+        }
+        
+        tbody.innerHTML = '';
+        
+        filteredWork.forEach(work => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><strong>${work.id}</strong></td>
+                <td>${this.getCategoryName(work.category)}</td>
+                <td>${work.location}</td>
+                <td><span class="priority-badge ${work.priority}">${this.getPriorityName(work.priority)}</span></td>
+                <td>${this.formatDate(work.assignedDate)}</td>
+                <td><span class="status-badge ${work.status}">${this.getStatusName(work.status)}</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn-sm btn-info" onclick="fieldDashboard.viewWork('${work.id}')">View</button>
+                        ${work.status !== 'completed' ? 
+                            `<button class="btn-sm btn-primary" onclick="fieldDashboard.showProgressModal('${work.id}')">Update</button>` : 
+                            ''}
                     </div>
-                </div>
-            </div>
-        `).join('');
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
     }
 
     updateStats() {
-        const assignedCount = this.assignedComplaints.filter(c => c.status === 'assigned').length;
-        const completedToday = this.assignedComplaints.filter(c => {
-            if (c.status !== 'resolved') return false;
-            const completedDate = new Date(c.completedAt || c.updatedAt);
-            const today = new Date();
-            return completedDate.toDateString() === today.toDateString();
-        }).length;
+        // SAMPLE DATA STATS - matches the demo work assignments
+        const assignedWork = this.workAssignments.length; // Total: 3
+        const notStarted = this.workAssignments.filter(w => w.status === 'assigned').length; // 2
+        const inProgress = this.workAssignments.filter(w => w.status === 'in-progress').length; // 1
+        const completedToday = this.workAssignments.filter(w => {
+            if (w.status !== 'completed' || !w.completionDate) return false;
+            const today = new Date().toDateString();
+            const completionDate = new Date(w.completionDate).toDateString();
+            return completionDate === today;
+        }).length; // 1 (completed today)
 
-        document.getElementById('assigned-count').textContent = assignedCount;
+        document.getElementById('assigned-work').textContent = assignedWork;
+        document.getElementById('not-started').textContent = notStarted;
+        document.getElementById('in-progress').textContent = inProgress;
         document.getElementById('completed-today').textContent = completedToday;
     }
 
-    showComplaintDetails(complaintId) {
-        const complaint = this.assignedComplaints.find(c => c.id === complaintId);
-        if (!complaint) return;
-
-        this.selectedComplaint = complaint;
-        this.populateUpdateModal(complaint);
-        document.getElementById('update-modal').classList.add('active');
-    }
-
-    updateComplaintStatus(complaintId) {
-        this.showComplaintDetails(complaintId);
-    }
-
-    viewComplaintDetails(complaintId) {
-        this.showComplaintDetails(complaintId);
-    }
-
-    populateUpdateModal(complaint) {
-        const summary = document.getElementById('complaint-summary');
-        summary.innerHTML = `
-            <div class="complaint-detail">
-                <h4>${complaint.id} - ${this.getCategoryDisplayName(complaint.category)}</h4>
-                <p><strong>Location:</strong> ${complaint.location}</p>
-                <p><strong>Description:</strong> ${complaint.description}</p>
-                <p><strong>Current Status:</strong> <span class="complaint-status status-${complaint.status}">${this.getStatusDisplayName(complaint.status)}</span></p>
-                <p><strong>Priority:</strong> <span class="complaint-priority priority-${complaint.priority}">${this.formatPriority(complaint.priority)}</span></p>
-                <p><strong>Assigned:</strong> ${this.formatDateTime(complaint.assignedAt)}</p>
+    showProgressModal(workId) {
+        this.currentWorkId = workId;
+        const work = this.workAssignments.find(w => w.id === workId);
+        
+        if (!work) return;
+        
+        // Populate work details
+        const detailsDiv = document.getElementById('progress-work-details');
+        detailsDiv.innerHTML = `
+            <h4>Work: ${work.id}</h4>
+            <div class="detail-row">
+                <span class="detail-label">Category:</span>
+                <span>${this.getCategoryName(work.category)}</span>
             </div>
+            <div class="detail-row">
+                <span class="detail-label">Location:</span>
+                <span>${work.location}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Priority:</span>
+                <span class="priority-badge ${work.priority}">${this.getPriorityName(work.priority)}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Assigned:</span>
+                <span>${this.formatDate(work.assignedDate)}</span>
+            </div>
+            <p><strong>Description:</strong> ${work.description}</p>
         `;
-
-        // Reset form
-        document.getElementById('update-form').reset();
         
-        // Set appropriate status options based on current status
-        this.updateStatusOptions(complaint.status);
+        // Set current status
+        document.getElementById('progress-status').value = work.status;
+        document.getElementById('progress-notes').value = '';
+        
+        // Set completion fields if already completed
+        if (work.status === 'completed') {
+            document.getElementById('completion-date').value = work.completionDate || '';
+            document.getElementById('completion-time').value = work.completionTime || '';
+            this.toggleCompletionFields();
+        } else {
+            // Set default completion date/time to now
+            const now = new Date();
+            document.getElementById('completion-date').value = now.toISOString().split('T')[0];
+            document.getElementById('completion-time').value = now.toTimeString().slice(0, 5);
+        }
+        
+        // Show modal
+        document.getElementById('progress-modal').style.display = 'block';
     }
 
-    updateStatusOptions(currentStatus) {
-        const statusSelect = document.getElementById('status-update');
-        const options = {
-            'assigned': [
-                { value: 'in-progress', text: 'Start Work' },
-                { value: 'escalate', text: 'Escalate to Officer' }
-            ],
-            'in-progress': [
-                { value: 'pending-verification', text: 'Work Completed - Pending Verification' },
-                { value: 'escalate', text: 'Escalate to Officer' }
-            ],
-            'pending-verification': [
-                { value: 'resolved', text: 'Mark as Resolved' },
-                { value: 'in-progress', text: 'Resume Work' },
-                { value: 'escalate', text: 'Escalate to Officer' }
-            ]
-        };
-
-        const availableOptions = options[currentStatus] || [];
+    toggleCompletionFields() {
+        const status = document.getElementById('progress-status').value;
+        const completionFields = document.getElementById('completion-fields');
         
-        statusSelect.innerHTML = '<option value="">Select Status</option>' +
-            availableOptions.map(option => 
-                `<option value="${option.value}">${option.text}</option>`
-            ).join('');
+        if (status === 'completed') {
+            completionFields.style.display = 'block';
+            // Make fields required
+            document.getElementById('completion-date').required = true;
+            document.getElementById('completion-time').required = true;
+            document.getElementById('completion-image').required = true;
+        } else {
+            completionFields.style.display = 'none';
+            // Remove required attribute
+            document.getElementById('completion-date').required = false;
+            document.getElementById('completion-time').required = false;
+            document.getElementById('completion-image').required = false;
+        }
     }
 
-    async submitStatusUpdate() {
-        if (!this.selectedComplaint) return;
-
-        const statusUpdate = document.getElementById('status-update').value;
-        const progressNotes = document.getElementById('progress-notes').value;
-        const proofPhotos = document.getElementById('proof-photos').files;
-        const estimatedCompletion = document.getElementById('estimated-completion').value;
-
-        if (!statusUpdate) {
-            this.showError('Please select a status update');
-            return;
-        }
-
-        // Validate permissions
-        if (!window.rolePermissions.hasPermission('update_complaint_status')) {
-            this.showError('You do not have permission to update complaint status');
-            return;
-        }
-
-        this.showLoading('submit-update');
-
-        try {
-            // Update complaint
-            this.selectedComplaint.status = statusUpdate;
-            this.selectedComplaint.updatedAt = new Date().toISOString();
-            this.selectedComplaint.updatedBy = this.currentUser.id;
+    updateProgress() {
+        const status = document.getElementById('progress-status').value;
+        const notes = document.getElementById('progress-notes').value;
+        
+        const work = this.workAssignments.find(w => w.id === this.currentWorkId);
+        if (!work) return;
+        
+        // Validate completion fields if status is completed
+        if (status === 'completed') {
+            const completionDate = document.getElementById('completion-date').value;
+            const completionTime = document.getElementById('completion-time').value;
+            const completionImage = document.getElementById('completion-image').files[0];
             
-            if (progressNotes) {
-                if (!this.selectedComplaint.notes) this.selectedComplaint.notes = [];
-                this.selectedComplaint.notes.push({
-                    text: progressNotes,
-                    addedBy: this.currentUser.name,
-                    addedAt: new Date().toISOString()
-                });
+            if (!completionDate || !completionTime || !completionImage) {
+                alert('Please fill in all completion fields including uploading an image');
+                return;
             }
-
-            if (estimatedCompletion) {
-                this.selectedComplaint.estimatedCompletion = estimatedCompletion;
-            }
-
-            if (statusUpdate === 'in-progress' && !this.selectedComplaint.startedAt) {
-                this.selectedComplaint.startedAt = new Date().toISOString();
-            }
-
-            if (statusUpdate === 'resolved') {
-                this.selectedComplaint.completedAt = new Date().toISOString();
-                this.selectedComplaint.completedBy = this.currentUser.id;
-            }
-
-            // Handle photo uploads (simulate)
-            if (proofPhotos.length > 0) {
-                if (!this.selectedComplaint.attachments) this.selectedComplaint.attachments = [];
-                
-                for (let i = 0; i < proofPhotos.length; i++) {
-                    const file = proofPhotos[i];
-                    this.selectedComplaint.attachments.push({
-                        name: file.name,
-                        type: file.type,
-                        size: file.size,
-                        uploadedBy: this.currentUser.name,
-                        uploadedAt: new Date().toISOString()
-                    });
-                }
-            }
-
-            // Save complaint
-            this.saveComplaint(this.selectedComplaint);
-
-            // Simulate API call delay
-            setTimeout(() => {
-                this.hideLoading('submit-update');
-                this.closeUpdateModal();
-                this.showSuccess(`Complaint ${this.selectedComplaint.id} status updated to ${this.getStatusDisplayName(statusUpdate)}`);
-                
-                // Refresh data
-                this.loadAssignedComplaints();
-            }, 1500);
-
-        } catch (error) {
-            this.hideLoading('submit-update');
-            console.error('Error updating complaint:', error);
-            this.showError('Failed to update complaint status');
+            
+            // Store completion data
+            work.completionDate = completionDate;
+            work.completionTime = completionTime;
+            work.completionImage = {
+                name: completionImage.name,
+                size: completionImage.size,
+                type: completionImage.type,
+                lastModified: completionImage.lastModified
+            };
         }
-    }
-
-    closeUpdateModal() {
-        document.getElementById('update-modal').classList.remove('active');
-        this.selectedComplaint = null;
-    }
-
-    showUpdateModal() {
-        if (this.assignedComplaints.length === 0) {
-            this.showError('No complaints available to update');
-            return;
-        }
-
-        // Show the first assigned complaint for demo
-        const firstAssigned = this.assignedComplaints.find(c => c.status === 'assigned') || this.assignedComplaints[0];
-        this.showComplaintDetails(firstAssigned.id);
-    }
-
-    showUploadProofDialog() {
-        // Create a simple file upload dialog
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.multiple = true;
-        input.accept = 'image/*';
         
-        input.onchange = (e) => {
-            const files = e.target.files;
-            if (files.length > 0) {
-                this.showSuccess(`${files.length} file(s) selected for upload`);
-                // In a real implementation, files would be uploaded here
-            }
+        // Update work status
+        const oldStatus = work.status;
+        work.status = status;
+        work.lastUpdated = new Date().toISOString();
+        
+        // Add progress note
+        if (notes.trim()) {
+            work.progressNotes = work.progressNotes || [];
+            work.progressNotes.push({
+                timestamp: new Date().toISOString(),
+                author: this.currentUser.name,
+                content: notes,
+                statusChange: oldStatus !== status ? `${oldStatus} → ${status}` : null
+            });
+        }
+        
+        // If completed, submit to Officer Manager
+        if (status === 'completed') {
+            this.submitToOfficerManager(work);
+        }
+        
+        this.saveWork();
+        this.renderWork();
+        this.updateStats();
+        this.closeModal('progress-modal');
+        
+        const statusMessage = status === 'completed' ? 
+            'Work marked as completed and submitted to Officer Manager for verification' :
+            `Work status updated to ${this.getStatusName(status)}`;
+        
+        alert(statusMessage);
+    }
+
+    submitToOfficerManager(work) {
+        // Create submission record for Officer Manager
+        const submissions = JSON.parse(localStorage.getItem('iala_officer_submissions') || '[]');
+        
+        const submission = {
+            id: work.id,
+            workId: work.id,
+            submittedBy: this.currentUser.id,
+            submittedByName: this.currentUser.name,
+            submissionDate: new Date().toISOString(),
+            category: work.category,
+            location: work.location,
+            description: work.description,
+            completionDate: work.completionDate,
+            completionTime: work.completionTime,
+            completionImage: work.completionImage,
+            progressNotes: work.progressNotes,
+            status: 'pending_verification',
+            verificationStatus: null,
+            verifiedBy: null,
+            verificationDate: null,
+            verificationNotes: null
         };
         
-        input.click();
+        submissions.push(submission);
+        localStorage.setItem('iala_officer_submissions', JSON.stringify(submissions));
+        
+        // Update the original complaint status in the main complaints list
+        const allComplaints = JSON.parse(localStorage.getItem('iala_complaints') || '[]');
+        const complaintIndex = allComplaints.findIndex(c => c.id === work.id);
+        if (complaintIndex !== -1) {
+            allComplaints[complaintIndex] = { ...work };
+            localStorage.setItem('iala_complaints', JSON.stringify(allComplaints));
+        }
     }
 
-    showMobileAppInfo() {
-        this.showInfo('Mobile App', 'The GHMC Field Manager mobile app is coming soon. It will allow you to update complaints directly from the field.');
+    viewWork(workId) {
+        const work = this.workAssignments.find(w => w.id === workId);
+        if (!work) return;
+        
+        const content = document.getElementById('work-details-content');
+        content.innerHTML = `
+            <div class="work-details">
+                <h4>Work Details: ${work.id}</h4>
+                <div class="detail-row">
+                    <span class="detail-label">Category:</span>
+                    <span>${this.getCategoryName(work.category)}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Status:</span>
+                    <span class="status-badge ${work.status}">${this.getStatusName(work.status)}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Priority:</span>
+                    <span class="priority-badge ${work.priority}">${this.getPriorityName(work.priority)}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Location:</span>
+                    <span>${work.location}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Assigned Date:</span>
+                    <span>${this.formatDate(work.assignedDate)}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Citizen:</span>
+                    <span>${work.citizenName} (${work.citizenPhone})</span>
+                </div>
+                ${work.completionDate ? `
+                <div class="detail-row">
+                    <span class="detail-label">Completed:</span>
+                    <span>${work.completionDate} at ${work.completionTime}</span>
+                </div>
+                ` : ''}
+                <p><strong>Description:</strong></p>
+                <p>${work.description}</p>
+                ${work.assignmentNotes ? `
+                <p><strong>Assignment Notes:</strong></p>
+                <p>${work.assignmentNotes}</p>
+                ` : ''}
+            </div>
+            
+            ${work.progressNotes && work.progressNotes.length > 0 ? `
+            <div style="margin-top: 1rem;">
+                <h4>Progress Log:</h4>
+                ${work.progressNotes.map(note => `
+                    <div style="background: #f8f9fa; padding: 0.75rem; margin: 0.5rem 0; border-radius: 4px; border-left: 3px solid #333;">
+                        <div style="font-size: 0.8rem; color: #666; margin-bottom: 0.25rem;">
+                            ${this.formatDate(note.timestamp)} - ${note.author}
+                            ${note.statusChange ? `<span style="color: #28a745; font-weight: 500;"> (${note.statusChange})</span>` : ''}
+                        </div>
+                        <div>${note.content}</div>
+                    </div>
+                `).join('')}
+            </div>
+            ` : ''}
+            
+            ${work.completionImage ? `
+            <div style="margin-top: 1rem;">
+                <h4>Completion Evidence:</h4>
+                <p><strong>Image:</strong> ${work.completionImage.name} (${(work.completionImage.size / 1024).toFixed(1)} KB)</p>
+            </div>
+            ` : ''}
+        `;
+        
+        document.getElementById('details-modal').style.display = 'block';
     }
 
-    scrollToComplaints() {
-        document.querySelector('.complaints-section').scrollIntoView({ 
-            behavior: 'smooth' 
-        });
+    setupEventListeners() {
+        // Modal close events
+        window.onclick = (event) => {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        };
     }
 
     // Utility methods
-    getAllComplaints() {
-        const saved = localStorage.getItem('ghmc_complaints');
-        return saved ? JSON.parse(saved) : [];
-    }
-
-    saveComplaint(complaint) {
-        const complaints = this.getAllComplaints();
-        const index = complaints.findIndex(c => c.id === complaint.id);
-        
-        if (index > -1) {
-            complaints[index] = complaint;
-        } else {
-            complaints.push(complaint);
-        }
-        
-        localStorage.setItem('ghmc_complaints', JSON.stringify(complaints));
-    }
-
-    getCategoryDisplayName(category) {
-        const categoryNames = {
+    getCategoryName(category) {
+        const categories = {
             'street-light': 'Street Light',
             'pothole': 'Road Pothole',
-            'garbage': 'Garbage Collection',
+            'garbage': 'Garbage',
             'water-supply': 'Water Supply',
             'drainage': 'Drainage',
-            'cctv': 'CCTV',
-            'incident': 'Incident Reporting',
-            'fogging': 'Fogging',
-            'green-belt': 'Green Belt'
+            'cctv': 'CCTV'
         };
-        return categoryNames[category] || category;
+        return categories[category] || category;
     }
 
-    getStatusDisplayName(status) {
-        const statusNames = {
-            'submitted': 'Submitted',
-            'assigned': 'Assigned',
+    getStatusName(status) {
+        const statuses = {
+            'assigned': 'Not Started',
             'in-progress': 'In Progress',
-            'pending-verification': 'Pending Verification',
-            'resolved': 'Resolved',
-            'escalated': 'Escalated'
+            'completed': 'Completed'
         };
-        return statusNames[status] || status;
+        return statuses[status] || status;
     }
 
-    formatPriority(priority) {
-        return priority.charAt(0).toUpperCase() + priority.slice(1);
+    getPriorityName(priority) {
+        const priorities = {
+            'normal': 'Normal',
+            'high': 'High',
+            'urgent': 'Urgent'
+        };
+        return priorities[priority] || priority;
     }
 
-    getComplaintAge(submittedAt) {
-        const now = new Date();
-        const submitted = new Date(submittedAt);
-        const diffMs = now - submitted;
-        const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-        const diffDays = Math.floor(diffHours / 24);
-
-        if (diffDays > 0) {
-            return `${diffDays} day${diffDays > 1 ? 's' : ''}`;
-        } else {
-            return `${diffHours} hour${diffHours > 1 ? 's' : ''}`;
-        }
+    formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-IN', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
     }
 
-    formatDateTime(dateString) {
-        if (!dateString) return '';
-        return new Date(dateString).toLocaleString();
-    }
-
-    showLoading(buttonId) {
-        const button = document.getElementById(buttonId);
-        if (button) {
-            button.classList.add('loading');
-            button.disabled = true;
-        }
-    }
-
-    hideLoading(buttonId) {
-        const button = document.getElementById(buttonId);
-        if (button) {
-            button.classList.remove('loading');
-            button.disabled = false;
-        }
-    }
-
-    showSuccess(message) {
-        this.showNotification('Success', message, 'success');
-    }
-
-    showError(message) {
-        this.showNotification('Error', message, 'error');
-    }
-
-    showInfo(title, message) {
-        this.showNotification(title, message, 'info');
-    }
-
-    showNotification(title, message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: ${type === 'error' ? '#666' : '#333'};
-            color: white;
-            padding: 12px 20px;
-            border-radius: 6px;
-            z-index: 10001;
-            font-size: 14px;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            max-width: 300px;
-        `;
+    saveWork() {
+        // Update the main complaints list with our work assignments
+        const allComplaints = JSON.parse(localStorage.getItem('iala_complaints') || '[]');
         
-        notification.innerHTML = `
-            <div style="font-weight: 600; margin-bottom: 4px;">${title}</div>
-            <div style="font-size: 12px; opacity: 0.9;">${message}</div>
-        `;
-        
-        document.body.appendChild(notification);
-
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.parentNode.removeChild(notification);
+        this.workAssignments.forEach(work => {
+            const index = allComplaints.findIndex(c => c.id === work.id);
+            if (index !== -1) {
+                allComplaints[index] = { ...work };
             }
-        }, 5000);
+        });
+        
+        localStorage.setItem('iala_complaints', JSON.stringify(allComplaints));
+    }
+
+    closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
     }
 }
 
+// Global functions
+function filterWork() {
+    fieldDashboard.renderWork();
+}
+
+function loadWork() {
+    fieldDashboard.loadWorkAssignments();
+}
+
+function toggleCompletionFields() {
+    fieldDashboard.toggleCompletionFields();
+}
+
+function updateProgress() {
+    fieldDashboard.updateProgress();
+}
+
+// Global logout function - multiple approaches for compatibility
+function logoutUser() {
+    console.log('Field Manager logout function called'); // Debug log
+    
+    if (confirm('Are you sure you want to logout?')) {
+        try {
+            // Clear all session data
+            localStorage.removeItem('iala_session');
+            localStorage.removeItem('iala_user');
+            localStorage.removeItem('iala_session_data');
+            localStorage.removeItem('iala_user_session');
+            localStorage.removeItem('current_dashboard');
+            localStorage.removeItem('field_manager_session');
+            
+            // Clear session storage as well
+            sessionStorage.clear();
+            
+            console.log('Field Manager session data cleared, redirecting to login');
+            
+            // Force redirect to login page
+            window.location.replace('auth-system.html');
+            
+        } catch (error) {
+            console.error('Error during Field Manager logout:', error);
+            // Force redirect even if there's an error
+            alert('Logging out...');
+            window.location.href = 'auth-system.html';
+        }
+    }
+}
+
+// Force logout without confirmation
+function forceLogout() {
+    console.log('Field Manager force logout called');
+    localStorage.clear();
+    sessionStorage.clear();
+    window.location.href = 'auth-system.html';
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+
 // Initialize dashboard
+let fieldDashboard;
 document.addEventListener('DOMContentLoaded', () => {
-    window.fieldDashboard = new FieldManagerDashboard();
+    fieldDashboard = new FieldManagerDashboard();
+    
+    // Ensure logout functions are globally accessible
+    window.logoutUser = logoutUser;
+    window.forceLogout = forceLogout;
+    
+    console.log('Field Manager dashboard loaded, logout functions available:', {
+        logoutUser: typeof window.logoutUser,
+        forceLogout: typeof window.forceLogout
+    });
 });

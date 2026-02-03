@@ -1,7 +1,7 @@
 # Management Role Signup System
 
 ## Overview
-The Management Role Signup System allows authorized personnel to request access to management-level roles within the GHMC system. This external add-on maintains all existing functionality while adding secure signup capabilities.
+The Management Role Signup System allows authorized personnel to request access to management-level roles within the IALA system. This external add-on maintains all existing functionality while adding secure signup capabilities.
 
 ## Features
 
@@ -17,7 +17,7 @@ The Management Role Signup System allows authorized personnel to request access 
 3. **Officer Manager**: Department-level oversight and complaint assignment
 
 ### Security Features
-- **Employee ID Validation**: GHMC employee ID format (GHMC followed by 6 digits)
+- **Employee ID Validation**: IALA employee ID format (IALA followed by 6 digits)
 - **Duplicate Prevention**: Prevents duplicate employee IDs in system
 - **Approval Required**: All accounts inactive until admin approval
 - **Audit Trail**: Complete logging of signup requests and approvals
@@ -30,7 +30,7 @@ The Management Role Signup System allows authorized personnel to request access 
 3. Select desired management role
 4. Fill in all required information:
    - Full name and employee ID
-   - Official GHMC email and mobile
+   - Official IALA email and mobile
    - Department (for Officer/Field Manager roles)
    - Area (for Field Manager role only)
    - Justification for access request
@@ -76,9 +76,9 @@ The Management Role Signup System allows authorized personnel to request access 
 
 ### Test Employee IDs
 Use these formats for testing:
-- GHMC123456
-- GHMC789012
-- GHMC345678
+- IALA123456
+- IALA789012
+- IALA345678
 
 ## Workflow Example
 

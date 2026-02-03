@@ -1,4 +1,4 @@
-// Integration Script - Add this to existing GHMC app to enable AI module
+// Integration Script - Add this to existing IALA app to enable AI module
 (function() {
     'use strict';
 
@@ -99,7 +99,7 @@
     }
 
     function setupIntegration() {
-        console.log('GHMC AI Module integrated successfully');
+        console.log('IALA AI Module integrated successfully');
         
         // Sync complaints between AI module and main app
         if (AI_MODULE_CONFIG.syncWithMainApp && window.ghmc_app) {
@@ -221,9 +221,9 @@
     }
 
     // Public API for main app to interact with AI module
-    window.GHMC_AI_API = {
+    window.IALA_AI_API = {
         isEnabled: () => AI_MODULE_CONFIG.enabled,
-        isReady: () => window.ghmc_ai_integrated === true,
+        isReady: () => window.iala_ai_integrated === true,
         
         showAIChat: () => {
             if (window.ghmc_ai) {
@@ -281,6 +281,6 @@
     }
 
     // Expose configuration for customization
-    window.GHMC_AI_CONFIG = AI_MODULE_CONFIG;
+    window.IALA_AI_CONFIG = AI_MODULE_CONFIG;
 
 })();

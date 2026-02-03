@@ -1,6 +1,6 @@
 ---
 layout: default
-title: GHMC Civic Services
+title: IALA Civic Services
 ---
 
 <!DOCTYPE html>
@@ -8,7 +8,7 @@ title: GHMC Civic Services
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GHMC Civic Services - Welcome</title>
+    <title>IALA Civic Services - Welcome</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -92,8 +92,8 @@ title: GHMC Civic Services
 </head>
 <body>
     <div class="container">
-        <h1>🏛️ GHMC Civic Services</h1>
-        <p class="subtitle">Complete Digital Platform for Greater Hyderabad Municipal Corporation</p>
+        <h1>🏛️ IALA Civic Services</h1>
+        <p class="subtitle">Complete Digital Platform for IALA Cherlapally</p>
         
         <div>
             <a href="index.html?access=guest" class="btn btn-secondary">🚀 Start as Guest</a>

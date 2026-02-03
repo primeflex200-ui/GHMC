@@ -1,5 +1,5 @@
-// GHMC Civic Services App JavaScript
-class GHMCApp {
+// IALA Civic Services App JavaScript
+class IALAApp {
     constructor() {
         this.currentScreen = 'home';
         this.currentUser = null;
@@ -325,7 +325,7 @@ class GHMCApp {
                     <div class="card-header">
                         <div>
                             <div class="card-title">Street Light Not Working</div>
-                            <div class="card-subtitle">Complaint ID: GHMC2024001</div>
+                            <div class="card-subtitle">Complaint ID: IALA2024001</div>
                         </div>
                         <span class="status status-progress">In Progress</span>
                     </div>
@@ -340,7 +340,7 @@ class GHMCApp {
                     <div class="card-header">
                         <div>
                             <div class="card-title">Road Pothole</div>
-                            <div class="card-subtitle">Complaint ID: GHMC2024002</div>
+                            <div class="card-subtitle">Complaint ID: IALA2024002</div>
                         </div>
                         <span class="status status-resolved">Resolved</span>
                     </div>
@@ -355,7 +355,7 @@ class GHMCApp {
                     <div class="card-header">
                         <div>
                             <div class="card-title">Garbage Collection</div>
-                            <div class="card-subtitle">Complaint ID: GHMC2024003</div>
+                            <div class="card-subtitle">Complaint ID: IALA2024003</div>
                         </div>
                         <span class="status status-assigned">Assigned</span>
                     </div>
@@ -1550,7 +1550,7 @@ class GHMCApp {
         submitBtn.disabled = true;
 
         setTimeout(() => {
-            alert('Complaint submitted successfully! Complaint ID: GHMC2024004');
+            alert('Complaint submitted successfully! Complaint ID: IALA2024004');
             
             // Reset form
             document.getElementById('issue-form').reset();
@@ -1583,13 +1583,13 @@ class GHMCApp {
 // Initialize the app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     // Check if app is already initialized (from preview mode)
-    if (!window.ghmc_app) {
-        window.ghmc_app = new GHMCApp();
+    if (!window.iala_app) {
+        window.iala_app = new IALAApp();
     }
 });
 
-// Make GHMCApp globally available for preview mode
-window.GHMCApp = GHMCApp;
+// Make IALAApp globally available for preview mode
+window.IALAApp = IALAApp;
 
 // Add some basic touch feedback for mobile
 document.addEventListener('touchstart', () => {}, { passive: true });

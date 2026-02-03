@@ -1,6 +1,6 @@
-# GHMC Role-Based Access Control System
+# IALA Role-Based Access Control System
 
-A comprehensive role-based access control (RBAC) system that adds structured governance, accountability, and scalability to the GHMC Civic Services platform without modifying existing functionality.
+A comprehensive role-based access control (RBAC) system that adds structured governance, accountability, and scalability to the IALA Civic Services platform without modifying existing functionality.
 
 ## Overview
 
@@ -466,4 +466,4 @@ console.log('RBAC State:', {
 
 ---
 
-*This RBAC system enhances the GHMC Civic Services platform with enterprise-grade security, workflow management, and accountability while preserving all existing functionality and user experience.*
+*This RBAC system enhances the IALA Civic Services platform with enterprise-grade security, workflow management, and accountability while preserving all existing functionality and user experience.*

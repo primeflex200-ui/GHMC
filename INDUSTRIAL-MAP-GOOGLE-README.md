@@ -1,4 +1,4 @@
-# GHMC Industrial Map - Google Maps Implementation
+# IALA Industrial Map - Google Maps Implementation
 
 ## 🗺️ **FRESH BUILD - GOOGLE MAPS TESTING MODE**
 

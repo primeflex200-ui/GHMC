@@ -1,5 +1,5 @@
-// Integration Bridge - Connects all GHMC modules seamlessly
-class GHMCIntegrationBridge {
+// Integration Bridge - Connects all IALA modules seamlessly
+class IALAIntegrationBridge {
     constructor() {
         this.modules = {
             mainApp: null,
@@ -22,14 +22,14 @@ class GHMCIntegrationBridge {
         this.setupEventListeners();
         this.initializeCrossModuleCommunication();
         this.startHealthMonitoring();
-        console.log('GHMC Integration Bridge initialized');
+        console.log('IALA Integration Bridge initialized');
     }
 
     detectModules() {
         // Detect which modules are loaded
-        if (typeof window.ghmc_app !== 'undefined') {
-            this.modules.mainApp = window.ghmc_app;
-            console.log('Main GHMC app detected');
+        if (typeof window.iala_app !== 'undefined') {
+            this.modules.mainApp = window.iala_app;
+            console.log('Main IALA app detected');
         }
 
         if (typeof window.ghmc_ai !== 'undefined') {
@@ -652,7 +652,7 @@ class GHMCIntegrationBridge {
 
 // Initialize integration bridge
 document.addEventListener('DOMContentLoaded', () => {
-    window.ghmc_bridge = new GHMCIntegrationBridge();
+    window.iala_bridge = new IALAIntegrationBridge();
 });
 
 // Global error handler
@@ -674,4 +674,4 @@ window.addEventListener('error', (event) => {
 });
 
 // Export for use by other modules
-window.GHMCIntegrationBridge = GHMCIntegrationBridge;
+window.IALAIntegrationBridge = IALAIntegrationBridge;

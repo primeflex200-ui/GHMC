@@ -1,16 +1,16 @@
-# GHMC Civic Services - Complete Digital Platform
+# IALA Civic Services - Complete Digital Platform
 
-A comprehensive digital platform for Greater Hyderabad Municipal Corporation (GHMC) civic services, featuring role-based access control, AI-powered grievance handling, and real-time industrial mapping.
+A comprehensive digital platform for IALA civic services, featuring role-based access control, AI-powered grievance handling, and real-time industrial mapping.
 
 ## 🌟 Live Demo
 
-**GitHub Pages:** [https://primeflex200-ui.github.io/GHMC/](https://primeflex200-ui.github.io/GHMC/)
+**GitHub Pages:** [https://primeflex200-ui.github.io/IALA/](https://primeflex200-ui.github.io/IALA/)
 
 ### Quick Access Links:
-- **Main App (Guest):** [Guest Access](https://primeflex200-ui.github.io/GHMC/index.html?access=guest)
-- **Login System:** [Management Login](https://primeflex200-ui.github.io/GHMC/auth-system.html)
-- **Industrial Map:** [OpenStreetMap View](https://primeflex200-ui.github.io/GHMC/industrial-map-google.html)
-- **AI Assistant:** [AI Grievance Module](https://primeflex200-ui.github.io/GHMC/ai-module.html)
+- **Main App (Guest):** [Guest Access](https://primeflex200-ui.github.io/IALA/index.html?access=guest)
+- **Login System:** [Management Login](https://primeflex200-ui.github.io/IALA/auth-system.html)
+- **Industrial Map:** [OpenStreetMap View](https://primeflex200-ui.github.io/IALA/industrial-map-google.html)
+- **AI Assistant:** [AI Grievance Module](https://primeflex200-ui.github.io/IALA/ai-module.html)
 
 ## 🚀 Features
 
@@ -54,7 +54,7 @@ A comprehensive digital platform for Greater Hyderabad Municipal Corporation (GH
 ## 🎯 Quick Start
 
 ### For Users:
-1. **Guest Access:** Click [here](https://primeflex200-ui.github.io/GHMC/index.html?access=guest) for immediate access
+1. **Guest Access:** Click [here](https://primeflex200-ui.github.io/IALA/index.html?access=guest) for immediate access
 2. **Management Login:** Use any credentials (demo mode enabled)
 3. **Submit Complaints:** Select service → Fill details → Submit
 4. **Track Status:** View complaint history and updates
@@ -62,10 +62,10 @@ A comprehensive digital platform for Greater Hyderabad Municipal Corporation (GH
 ### For Developers:
 ```bash
 # Clone the repository
-git clone https://github.com/primeflex200-ui/GHMC.git
+git clone https://github.com/primeflex200-ui/IALA.git
 
 # Navigate to directory
-cd GHMC
+cd IALA
 
 # Install dependencies (optional)
 npm install
@@ -139,12 +139,12 @@ This application is deployed on GitHub Pages and is ready for production use:
 ## 📞 Support
 
 For technical support or questions:
-- **GitHub Issues:** [Report Issues](https://github.com/primeflex200-ui/GHMC/issues)
+- **GitHub Issues:** [Report Issues](https://github.com/primeflex200-ui/IALA/issues)
 - **Documentation:** Check individual README files for specific modules
 
 ## 📄 License
 
-This project is developed for Greater Hyderabad Municipal Corporation (GHMC) civic services.
+This project is developed for IALA civic services.
 
 ---
 

@@ -1,5 +1,5 @@
 @echo off
-echo Starting GHMC Civic Services Server...
+echo Starting IALA Civic Services Server...
 echo.
 echo Server will be available at:
 echo   http://localhost:8000/start.html

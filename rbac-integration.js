@@ -1,4 +1,4 @@
-// RBAC Integration with Main GHMC App - Auto-Update System
+// RBAC Integration with Main IALA App - Auto-Update System
 (function() {
     'use strict';
 

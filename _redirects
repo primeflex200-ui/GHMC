@@ -1,4 +1,4 @@
-# Netlify/GitHub Pages redirects for GHMC Civic Services
+# Netlify/GitHub Pages redirects for IALA Civic Services
 
 # Default redirect to auth system (login page)
 /  /auth-system.html  200

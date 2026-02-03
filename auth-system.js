@@ -1,5 +1,5 @@
-// GHMC Authentication System
-class GHMCAuthSystem {
+// IALA Authentication System
+class IALAAuthSystem {
     constructor() {
         this.currentUser = null;
         this.users = this.loadUsers();
@@ -94,7 +94,7 @@ class GHMCAuthSystem {
                 password: 'admin123',
                 role: 'admin',
                 name: 'System Administrator',
-                email: 'admin@ghmc.gov.in',
+                email: 'admin@iala.gov.in',
                 permissions: ['all']
             },
             {
@@ -102,7 +102,7 @@ class GHMCAuthSystem {
                 password: 'officer123',
                 role: 'officer-manager',
                 name: 'Officer Manager',
-                email: 'officer@ghmc.gov.in',
+                email: 'officer@iala.gov.in',
                 department: 'General Services',
                 permissions: ['view_all_complaints', 'assign_complaints', 'escalate_complaints', 'manage_field_managers']
             },
@@ -111,7 +111,7 @@ class GHMCAuthSystem {
                 password: 'field123',
                 role: 'field-manager',
                 name: 'Field Manager',
-                email: 'field@ghmc.gov.in',
+                email: 'field@iala.gov.in',
                 area: 'Banjara Hills',
                 department: 'Road Maintenance',
                 permissions: ['view_assigned_complaints', 'update_status', 'upload_proof']
@@ -121,7 +121,7 @@ class GHMCAuthSystem {
                 password: 'emp123',
                 role: 'employee',
                 name: 'Field Employee',
-                email: 'employee@ghmc.gov.in',
+                email: 'employee@iala.gov.in',
                 department: 'General Services',
                 supervisor: 'field001',
                 permissions: ['view_assigned_tasks', 'update_task_status', 'upload_completion_proof']
@@ -182,7 +182,7 @@ class GHMCAuthSystem {
             password: password,
             role: role,
             name: this.generateNameForRole(role, userId),
-            email: `${userId}@ghmc.gov.in`,
+            email: `${userId}@iala.gov.in`,
             permissions: this.getPermissionsForRole(role),
             isDemo: true
         };
@@ -213,9 +213,9 @@ class GHMCAuthSystem {
         });
 
         // Store in localStorage for persistence
-        localStorage.setItem('ghmc_session', sessionId);
-        localStorage.setItem('ghmc_user', JSON.stringify(user));
-        localStorage.setItem('ghmc_session_data', JSON.stringify({
+        localStorage.setItem('iala_session', sessionId);
+        localStorage.setItem('iala_user', JSON.stringify(user));
+        localStorage.setItem('iala_session_data', JSON.stringify({
             created: new Date().toISOString(),
             sessionId: sessionId
         }));
@@ -229,9 +229,26 @@ class GHMCAuthSystem {
     }
 
     redirectToRoleDashboard(role) {
-        // For all roles, redirect to the main app with session info
-        const sessionId = localStorage.getItem('ghmc_session');
-        window.location.href = `index.html?session=${sessionId}&role=${role}`;
+        const sessionId = localStorage.getItem('iala_session');
+        
+        // Role-based dashboard redirects
+        switch (role) {
+            case 'employee':
+                window.location.href = `employee-dashboard.html?session=${sessionId}`;
+                break;
+            case 'field-manager':
+                window.location.href = `field-dashboard.html?session=${sessionId}`;
+                break;
+            case 'officer-manager':
+                window.location.href = `officer-dashboard.html?session=${sessionId}`;
+                break;
+            case 'admin':
+                window.location.href = `admin-dashboard.html?session=${sessionId}`;
+                break;
+            default:
+                // For normal users and guests, redirect to main app
+                window.location.href = `index.html?session=${sessionId}&role=${role}`;
+        }
     }
 
     handleRegistration() {
@@ -309,8 +326,8 @@ class GHMCAuthSystem {
         };
 
         this.currentUser = guestUser;
-        localStorage.setItem('ghmc_user', JSON.stringify(guestUser));
-        localStorage.setItem('ghmc_session_data', JSON.stringify({
+        localStorage.setItem('iala_user', JSON.stringify(guestUser));
+        localStorage.setItem('iala_session_data', JSON.stringify({
             created: new Date().toISOString(),
             sessionId: 'guest_session_' + Date.now()
         }));
@@ -418,7 +435,7 @@ class GHMCAuthSystem {
         }
 
         if (!this.validateEmployeeId(employeeId)) {
-            this.showError('Please enter a valid GHMC employee ID');
+            this.showError('Please enter a valid IALA employee ID');
             return;
         }
 
@@ -496,8 +513,8 @@ class GHMCAuthSystem {
     }
 
     validateEmployeeId(employeeId) {
-        // GHMC employee ID format: GHMC followed by 6 digits
-        const employeeIdRegex = /^GHMC\d{6}$/i;
+        // IALA employee ID format: IALA followed by 6 digits
+        const employeeIdRegex = /^IALA\d{6}$/i;
         return employeeIdRegex.test(employeeId);
     }
 
@@ -526,7 +543,7 @@ class GHMCAuthSystem {
     savePendingSignupRequest(request) {
         const pendingRequests = this.getPendingSignupRequests();
         pendingRequests.push(request);
-        localStorage.setItem('ghmc_pending_signups', JSON.stringify(pendingRequests));
+        localStorage.setItem('infra_pending_signups', JSON.stringify(pendingRequests));
         
         // Also save to audit trail
         this.addToAuditTrail({
@@ -543,7 +560,7 @@ class GHMCAuthSystem {
     }
 
     getPendingSignupRequests() {
-        const saved = localStorage.getItem('ghmc_pending_signups');
+        const saved = localStorage.getItem('iala_pending_signups');
         return saved ? JSON.parse(saved) : [];
     }
 
@@ -563,11 +580,11 @@ class GHMCAuthSystem {
             priority: 'high'
         });
         
-        localStorage.setItem('ghmc_admin_notifications', JSON.stringify(notifications));
+        localStorage.setItem('iala_admin_notifications', JSON.stringify(notifications));
     }
 
     getAdminNotifications() {
-        const saved = localStorage.getItem('ghmc_admin_notifications');
+        const saved = localStorage.getItem('iala_admin_notifications');
         return saved ? JSON.parse(saved) : [];
     }
 
@@ -580,11 +597,11 @@ class GHMCAuthSystem {
             auditTrail.splice(0, auditTrail.length - 1000);
         }
         
-        localStorage.setItem('ghmc_audit_trail', JSON.stringify(auditTrail));
+        localStorage.setItem('iala_audit_trail', JSON.stringify(auditTrail));
     }
 
     getAuditTrail() {
-        const saved = localStorage.getItem('ghmc_audit_trail');
+        const saved = localStorage.getItem('iala_audit_trail');
         return saved ? JSON.parse(saved) : [];
     }
 
@@ -631,7 +648,7 @@ class GHMCAuthSystem {
 
         // Remove from pending requests
         pendingRequests.splice(requestIndex, 1);
-        localStorage.setItem('ghmc_pending_signups', JSON.stringify(pendingRequests));
+        localStorage.setItem('infra_pending_signups', JSON.stringify(pendingRequests));
 
         // Add to audit trail
         this.addToAuditTrail({
@@ -677,11 +694,11 @@ class GHMCAuthSystem {
         // Move to rejected requests archive
         const rejectedRequests = this.getRejectedSignupRequests();
         rejectedRequests.push(request);
-        localStorage.setItem('ghmc_rejected_signups', JSON.stringify(rejectedRequests));
+        localStorage.setItem('iala_rejected_signups', JSON.stringify(rejectedRequests));
 
         // Remove from pending requests
         pendingRequests.splice(requestIndex, 1);
-        localStorage.setItem('ghmc_pending_signups', JSON.stringify(pendingRequests));
+        localStorage.setItem('iala_pending_signups', JSON.stringify(pendingRequests));
 
         // Add to audit trail
         this.addToAuditTrail({
@@ -704,7 +721,7 @@ class GHMCAuthSystem {
     }
 
     getRejectedSignupRequests() {
-        const saved = localStorage.getItem('ghmc_rejected_signups');
+        const saved = localStorage.getItem('infra_rejected_signups');
         return saved ? JSON.parse(saved) : [];
     }
 
@@ -745,7 +762,7 @@ class GHMCAuthSystem {
             read: false
         });
         
-        localStorage.setItem(`ghmc_user_notifications_${user.id}`, JSON.stringify(notifications));
+        localStorage.setItem(`iala_user_notifications_${user.id}`, JSON.stringify(notifications));
     }
 
     sendRejectionNotification(request) {
@@ -757,7 +774,7 @@ class GHMCAuthSystem {
     }
 
     getUserNotifications(userId) {
-        const saved = localStorage.getItem(`ghmc_user_notifications_${userId}`);
+        const saved = localStorage.getItem(`infra_user_notifications_${userId}`);
         return saved ? JSON.parse(saved) : [];
     }
 
@@ -803,8 +820,8 @@ class GHMCAuthSystem {
     }
 
     checkExistingSession() {
-        const sessionId = localStorage.getItem('ghmc_session');
-        const userData = localStorage.getItem('ghmc_user');
+        const sessionId = localStorage.getItem('iala_session');
+        const userData = localStorage.getItem('iala_user');
 
         if (sessionId && userData) {
             try {
@@ -834,9 +851,9 @@ class GHMCAuthSystem {
     }
 
     clearSession() {
-        localStorage.removeItem('ghmc_session');
-        localStorage.removeItem('ghmc_user');
-        localStorage.removeItem('ghmc_session_data');
+        localStorage.removeItem('iala_session');
+        localStorage.removeItem('iala_user');
+        localStorage.removeItem('iala_session_data');
         this.currentUser = null;
     }
 
@@ -935,12 +952,12 @@ class GHMCAuthSystem {
     }
 
     loadUsers() {
-        const saved = localStorage.getItem('ghmc_users');
+        const saved = localStorage.getItem('iala_users');
         return saved ? JSON.parse(saved) : [];
     }
 
     saveUsers() {
-        localStorage.setItem('ghmc_users', JSON.stringify(this.users));
+        localStorage.setItem('iala_users', JSON.stringify(this.users));
     }
 
     hasPermission(permission) {
@@ -990,8 +1007,8 @@ class GHMCAuthSystem {
 
 // Initialize authentication system
 document.addEventListener('DOMContentLoaded', () => {
-    window.ghmc_auth = new GHMCAuthSystem();
+    window.iala_auth = new IALAAuthSystem();
 });
 
 // Export for use by other modules
-window.GHMCAuthSystem = GHMCAuthSystem;
+window.IALAAuthSystem = IALAAuthSystem;

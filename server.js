@@ -73,7 +73,7 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(port, () => {
-    console.log(`GHMC Civic Services Server running at http://localhost:${port}/`);
+    console.log(`IALA Civic Services Server running at http://localhost:${port}/`);
     console.log(`Direct Login: http://localhost:${port}/auth-system.html`);
     console.log(`Guest Access: http://localhost:${port}/index.html?access=guest`);
     console.log(`Industrial Map (Google): http://localhost:${port}/industrial-map-google.html`);

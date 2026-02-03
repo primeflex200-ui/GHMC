@@ -1,6 +1,6 @@
-# GHMC Employee Role - External Add-On
+# IALA Employee Role - External Add-On
 
-A dedicated Employee role system that extends the existing GHMC platform with field-level task execution capabilities without modifying any existing functionality.
+A dedicated Employee role system that extends the existing IALA platform with field-level task execution capabilities without modifying any existing functionality.
 
 ## Overview
 
@@ -170,7 +170,7 @@ Employee Login:
 ### **Task Data Structure**
 ```javascript
 {
-    id: 'GHMC2024401',
+    id: 'IALA2024401',
     category: 'street-light',
     description: 'Replace faulty street light bulb',
     location: 'Road No. 12, Banjara Hills',
@@ -266,4 +266,4 @@ The Employee role is fully compatible with the mobile field app interface:
 
 ---
 
-*The Employee role extends the GHMC platform with ground-level task execution capabilities while maintaining complete separation from existing functionality and preserving all current user experiences.*
+*The Employee role extends the IALA platform with ground-level task execution capabilities while maintaining complete separation from existing functionality and preserving all current user experiences.*

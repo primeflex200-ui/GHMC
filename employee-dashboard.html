@@ -3,165 +3,217 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GHMC Employee Dashboard</title>
-    <link rel="stylesheet" href="role-dashboards.css">
+    <title>Employee Dashboard - IALA Cherlapally Admin Site</title>
     <link rel="stylesheet" href="employee-dashboard.css">
 </head>
 <body>
     <div class="dashboard-container">
         <!-- Header -->
         <header class="dashboard-header">
-            <div class="header-content">
-                <div class="header-left">
-                    <h1>Employee Dashboard</h1>
-                    <div class="user-info">
-                        <span class="user-name" id="user-name">Employee</span>
-                        <span class="user-id" id="user-id">ID: Loading...</span>
-                    </div>
+            <div class="header-left">
+                <h1>Employee Dashboard</h1>
+                <p class="user-info">Welcome, <span id="user-name">Employee</span></p>
+            </div>
+            <div class="header-right">
+                <div class="location-info">
+                    <span>Hyderabad, Telangana</span>
                 </div>
-                <div class="header-right">
-                    <div class="header-stats">
-                        <div class="stat-item">
-                            <span class="stat-number" id="assigned-tasks">0</span>
-                            <span class="stat-label">Assigned Tasks</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-number" id="completed-tasks">0</span>
-                            <span class="stat-label">Completed</span>
-                        </div>
-                    </div>
-                    <button class="btn-secondary" id="logout-btn">Logout</button>
-                </div>
+                <button class="logout-btn" onclick="handleLogout()" id="logout-button">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                        <polyline points="16,17 21,12 16,7"/>
+                        <line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                    Logout
+                </button>
+                <!-- Force logout button with same styling as main logout -->
+                <button class="logout-btn" onclick="forceLogout()" style="margin-left: 10px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                        <polyline points="16,17 21,12 16,7"/>
+                        <line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                    Force Logout
+                </button>
             </div>
         </header>
 
         <!-- Main Content -->
         <main class="dashboard-main">
-            <!-- Task Status Overview -->
-            <section class="task-overview">
-                <h2>My Task Overview</h2>
-                <div class="status-cards">
-                    <div class="status-card not-started">
-                        <div class="status-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"/>
-                                <polyline points="12,6 12,12 16,14"/>
-                            </svg>
-                        </div>
-                        <div class="status-info">
-                            <div class="status-count" id="not-started-count">0</div>
-                            <div class="status-label">Not Started</div>
-                        </div>
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                        </svg>
                     </div>
-
-                    <div class="status-card in-progress">
-                        <div class="status-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                                <polyline points="22,4 12,14.01 9,11.01"/>
-                            </svg>
-                        </div>
-                        <div class="status-info">
-                            <div class="status-count" id="in-progress-count">0</div>
-                            <div class="status-label">In Progress</div>
-                        </div>
-                    </div>
-
-                    <div class="status-card completed">
-                        <div class="status-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                                <polyline points="22,4 12,14.01 9,11.01"/>
-                            </svg>
-                        </div>
-                        <div class="status-info">
-                            <div class="status-count" id="completed-count">0</div>
-                            <div class="status-label">Completed</div>
-                        </div>
+                    <div class="stat-content">
+                        <h3 id="total-complaints">0</h3>
+                        <p>Total Complaints</p>
                     </div>
                 </div>
-            </section>
 
-            <!-- Assigned Tasks -->
-            <section class="tasks-section">
+                <div class="stat-card">
+                    <div class="stat-icon pending">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12,6 12,12 16,14"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="pending-complaints">0</h3>
+                        <p>Pending Assignment</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon assigned">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="assigned-complaints">0</h3>
+                        <p>Assigned to Field</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon completed">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20,6 9,17 4,12"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="completed-complaints">0</h3>
+                        <p>Completed Today</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Complaints Table -->
+            <div class="table-section">
                 <div class="section-header">
-                    <h2>My Assigned Tasks</h2>
-                    <div class="section-controls">
-                        <select class="filter-select" id="status-filter">
-                            <option value="">All Status</option>
-                            <option value="not-started">Not Started</option>
+                    <h2>Complaints Management</h2>
+                    <div class="filter-controls">
+                        <select id="status-filter" onchange="filterComplaints()">
+                            <option value="all">All Status</option>
+                            <option value="new">New</option>
+                            <option value="assigned">Assigned</option>
                             <option value="in-progress">In Progress</option>
                             <option value="completed">Completed</option>
                         </select>
-                        <select class="filter-select" id="priority-filter">
-                            <option value="">All Priority</option>
-                            <option value="critical">Critical</option>
-                            <option value="high">High</option>
-                            <option value="medium">Medium</option>
-                            <option value="low">Low</option>
+                        <select id="category-filter" onchange="filterComplaints()">
+                            <option value="all">All Categories</option>
+                            <option value="street-light">Street Light</option>
+                            <option value="pothole">Road Pothole</option>
+                            <option value="garbage">Garbage</option>
+                            <option value="water-supply">Water Supply</option>
+                            <option value="drainage">Drainage</option>
+                            <option value="cctv">CCTV</option>
                         </select>
-                        <button class="btn-secondary" id="refresh-tasks">Refresh</button>
+                        <button class="refresh-btn" onclick="loadComplaints()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="23,4 23,10 17,10"/>
+                                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                            </svg>
+                            Refresh
+                        </button>
                     </div>
                 </div>
 
-                <div class="tasks-list" id="tasks-list">
-                    <!-- Tasks will be populated here -->
+                <div class="table-container">
+                    <table class="complaints-table">
+                        <thead>
+                            <tr>
+                                <th>Complaint ID</th>
+                                <th>Category</th>
+                                <th>Location</th>
+                                <th>Submitted</th>
+                                <th>Status</th>
+                                <th>Assigned To</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="complaints-tbody">
+                            <!-- Complaints will be loaded here -->
+                        </tbody>
+                    </table>
                 </div>
-            </section>
+            </div>
         </main>
+    </div>
 
-        <!-- Task Detail Modal -->
-        <div class="modal" id="task-modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>Task Details</h3>
-                    <button class="close-btn" id="close-task-modal">&times;</button>
+    <!-- Assignment Modal -->
+    <div class="modal" id="assignment-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Assign Complaint to Field Manager</h3>
+                <button class="close-btn" onclick="closeModal('assignment-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="complaint-details" id="assignment-complaint-details">
+                    <!-- Complaint details will be loaded here -->
                 </div>
-                <div class="modal-body">
-                    <div class="task-details" id="task-details">
-                        <!-- Task details will be shown here -->
-                    </div>
-                    
-                    <form class="task-form" id="task-form">
-                        <div class="form-group">
-                            <label class="form-label">Update Status</label>
-                            <select class="form-input" id="task-status-update" required>
-                                <option value="">Select Status</option>
-                                <option value="not-started">Not Started</option>
-                                <option value="in-progress">In Progress</option>
-                                <option value="completed">Completed</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Work Notes</label>
-                            <textarea class="form-input" id="work-notes" rows="4" placeholder="Add notes about your work progress..."></textarea>
-                        </div>
-
-                        <div class="form-group" id="completion-proof-group" style="display: none;">
-                            <label class="form-label">Upload Completion Proof</label>
-                            <input type="file" class="form-input" id="completion-proof" multiple accept="image/*">
-                            <div class="file-info">
-                                <small>Upload photos showing completed work</small>
-                            </div>
-                            <div class="proof-preview" id="proof-preview"></div>
-                        </div>
-
-                        <div class="form-group" id="completion-remarks-group" style="display: none;">
-                            <label class="form-label">Completion Remarks</label>
-                            <textarea class="form-input" id="completion-remarks" rows="3" placeholder="Add remarks about the completed work..."></textarea>
-                        </div>
-                    </form>
+                <div class="form-group">
+                    <label>Select Field Manager:</label>
+                    <select id="field-manager-select" required>
+                        <option value="">Choose Field Manager</option>
+                        <!-- Field managers will be loaded here -->
+                    </select>
                 </div>
-                <div class="modal-footer">
-                    <button class="btn-primary" id="update-task">Update Task</button>
-                    <button class="btn-secondary" id="cancel-task-update">Cancel</button>
+                <div class="form-group">
+                    <label>Priority Level:</label>
+                    <select id="priority-select" required>
+                        <option value="normal">Normal</option>
+                        <option value="high">High</option>
+                        <option value="urgent">Urgent</option>
+                    </select>
                 </div>
+                <div class="form-group">
+                    <label>Assignment Notes:</label>
+                    <textarea id="assignment-notes" placeholder="Add any special instructions or notes..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('assignment-modal')">Cancel</button>
+                <button class="btn-primary" onclick="assignComplaint()">Assign Complaint</button>
             </div>
         </div>
     </div>
 
-    <script src="role-permissions.js"></script>
+    <!-- Complaint Details Modal -->
+    <div class="modal" id="details-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Complaint Details</h3>
+                <button class="close-btn" onclick="closeModal('details-modal')">&times;</button>
+            </div>
+            <div class="modal-body" id="complaint-details-content">
+                <!-- Complaint details will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('details-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
     <script src="employee-dashboard.js"></script>
+    
+    <!-- Logout function setup -->
+    <script>
+        // Immediate global function setup
+        window.immediateLogout = function() {
+            console.log('Force logout called');
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.href = 'auth-system.html';
+        };
+        
+        console.log('Logout script loaded');
+    </script>
 </body>
 </html>
