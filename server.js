@@ -19,9 +19,9 @@ const mimeTypes = {
 const server = http.createServer((req, res) => {
     let filePath = '.' + req.url;
     
-    // Default to auth-system.html for root
+    // Default to welcome.html for root
     if (filePath === './') {
-        filePath = './auth-system.html';
+        filePath = './welcome.html';
     }
     
     // Handle industrial map route
@@ -48,6 +48,7 @@ const server = http.createServer((req, res) => {
                         <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
                             <h1>404 - File Not Found</h1>
                             <p>The requested file was not found.</p>
+                            <p><a href="/">Welcome Page</a></p>
                             <p><a href="/auth-system.html">Go to Login</a></p>
                             <p><a href="/index.html?access=guest">Guest Access</a></p>
                             <p><a href="/industrial-map-google.html">Industrial Map (Google)</a></p>
@@ -74,6 +75,7 @@ const server = http.createServer((req, res) => {
 
 server.listen(port, () => {
     console.log(`IALA Civic Services Server running at http://localhost:${port}/`);
+    console.log(`Welcome Page: http://localhost:${port}/`);
     console.log(`Direct Login: http://localhost:${port}/auth-system.html`);
     console.log(`Guest Access: http://localhost:${port}/index.html?access=guest`);
     console.log(`Industrial Map (Google): http://localhost:${port}/industrial-map-google.html`);

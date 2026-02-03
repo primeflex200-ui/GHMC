@@ -96,13 +96,13 @@ title: IALA Civic Services
         <p class="subtitle">Complete Digital Platform for IALA Cherlapally</p>
         
         <div>
+            <a href="welcome.html" class="btn btn-primary">🏠 Welcome Page</a>
             <a href="index.html?access=guest" class="btn btn-secondary">🚀 Start as Guest</a>
-            <a href="auth-system.html" class="btn btn-primary">🔐 Management Login</a>
         </div>
         
         <div>
+            <a href="auth-system.html" class="btn btn-outline">🔐 Management Login</a>
             <a href="industrial-map-google.html" class="btn btn-outline">🗺️ Industrial Map</a>
-            <a href="ai-module.html" class="btn btn-outline">🤖 AI Assistant</a>
         </div>
         
         <div class="features">
