@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - IALA Cherlapally</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .register-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .app-logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .app-logo svg {
+            width: 40px;
+            height: 40px;
+            fill: white;
+        }
+
+        .register-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .register-subtitle {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .register-button {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .register-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .register-container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+            
+            .register-title {
+                font-size: 1.5rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .back-button {
+                top: 15px;
+                left: 15px;
+                padding: 10px 14px;
+                font-size: 14px;
+            }
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        .form-group small {
+            color: #666;
+            font-size: 12px;
+            margin-top: 5px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <a href="user-access.html" class="back-button">← Back</a>
+
+    <div class="register-container">
+        <div class="register-header">
+            <div class="app-logo">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 2L2 7V10C2 16 6 20.9 12 22C18 20.9 22 16 22 10V7L12 2M12 4.3L20 8.2V10C20 15.25 16.87 19.24 12 20.05C7.13 19.24 4 15.25 4 10V8.2L12 4.3M15.5 12L14 13.5L10.5 10L9 11.5L14 16.5L17 13.5L15.5 12Z"/>
+                </svg>
+            </div>
+            <h1 class="register-title">Create Account</h1>
+            <p class="register-subtitle">Join IALA Cherlapally for better civic services</p>
+        </div>
+
+        <form id="registerForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="firstName">First Name <span class="required">*</span></label>
+                    <input type="text" id="firstName" name="firstName" required>
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Last Name <span class="required">*</span></label>
+                    <input type="text" id="lastName" name="lastName" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address <span class="required">*</span></label>
+                <input type="email" id="email" name="email" required>
+                <small>We'll use this for account verification and updates</small>
+            </div>
+
+            <div class="form-group">
+                <label for="mobile">Mobile Number <span class="required">*</span></label>
+                <input type="tel" id="mobile" name="mobile" pattern="[0-9]{10}" required>
+                <small>10-digit mobile number for SMS notifications</small>
+            </div>
+
+            <div class="form-group">
+                <label for="address">Address <span class="required">*</span></label>
+                <textarea id="address" name="address" placeholder="Enter your complete address" required></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="city">City <span class="required">*</span></label>
+                    <input type="text" id="city" name="city" value="Hyderabad" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="pincode">PIN Code <span class="required">*</span></label>
+                    <input type="text" id="pincode" name="pincode" pattern="[0-9]{6}" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password <span class="required">*</span></label>
+                <input type="password" id="password" name="password" minlength="6" required>
+                <small>Minimum 6 characters</small>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password <span class="required">*</span></label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
+            </div>
+
+            <button type="submit" class="register-button">Create Account</button>
+        </form>
+
+        <div class="login-link">
+            Already have an account? <a href="auth-system.html">Login here</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const password = formData.get('password');
+            const confirmPassword = formData.get('confirmPassword');
+            
+            // Validate passwords match
+            if (password !== confirmPassword) {
+                alert('Passwords do not match. Please try again.');
+                return;
+            }
+            
+            // Validate mobile number
+            const mobile = formData.get('mobile');
+            if (!/^[0-9]{10}$/.test(mobile)) {
+                alert('Please enter a valid 10-digit mobile number.');
+                return;
+            }
+            
+            // Validate PIN code
+            const pincode = formData.get('pincode');
+            if (!/^[0-9]{6}$/.test(pincode)) {
+                alert('Please enter a valid 6-digit PIN code.');
+                return;
+            }
+            
+            // Create user object
+            const userData = {
+                id: 'IALA' + Date.now(),
+                firstName: formData.get('firstName'),
+                lastName: formData.get('lastName'),
+                name: formData.get('firstName') + ' ' + formData.get('lastName'),
+                email: formData.get('email'),
+                mobile: formData.get('mobile'),
+                address: formData.get('address'),
+                city: formData.get('city'),
+                pincode: formData.get('pincode'),
+                registeredDate: new Date().toISOString(),
+                role: 'citizen',
+                isGuest: false
+            };
+            
+            // Store user data
+            localStorage.setItem('iala_user', JSON.stringify(userData));
+            localStorage.setItem('iala_session', 'registered_' + userData.id);
+            
+            // Show success message
+            alert(`Account created successfully!\n\nWelcome ${userData.name}!\nUser ID: ${userData.id}\n\nYou will now be redirected to the app.`);
+            
+            // Redirect to app with session
+            window.location.href = `index.html?session=${userData.id}`;
+        });
+
+        // Real-time password confirmation validation
+        document.getElementById('confirmPassword').addEventListener('input', function() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = this.value;
+            
+            if (confirmPassword && password !== confirmPassword) {
+                this.style.borderColor = '#e74c3c';
+            } else {
+                this.style.borderColor = '#e0e0e0';
+            }
+        });
+    </script>
+</body>
+</html>

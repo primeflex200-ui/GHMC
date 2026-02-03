@@ -49,7 +49,9 @@ const server = http.createServer((req, res) => {
                             <h1>404 - File Not Found</h1>
                             <p>The requested file was not found.</p>
                             <p><a href="/">Welcome Page</a></p>
-                            <p><a href="/auth-system.html">Go to Login</a></p>
+                            <p><a href="/user-access.html">User Access (Register/Login)</a></p>
+                            <p><a href="/register.html">Register New Account</a></p>
+                            <p><a href="/auth-system.html">Login</a></p>
                             <p><a href="/index.html?access=guest">Guest Access</a></p>
                             <p><a href="/industrial-map-google.html">Industrial Map (Google)</a></p>
                         </body>
@@ -76,7 +78,9 @@ const server = http.createServer((req, res) => {
 server.listen(port, () => {
     console.log(`IALA Civic Services Server running at http://localhost:${port}/`);
     console.log(`Welcome Page: http://localhost:${port}/`);
-    console.log(`Direct Login: http://localhost:${port}/auth-system.html`);
+    console.log(`User Access: http://localhost:${port}/user-access.html`);
+    console.log(`Register: http://localhost:${port}/register.html`);
+    console.log(`Login: http://localhost:${port}/auth-system.html`);
     console.log(`Guest Access: http://localhost:${port}/index.html?access=guest`);
     console.log(`Industrial Map (Google): http://localhost:${port}/industrial-map-google.html`);
     console.log(`Preview with Google Maps: http://localhost:${port}/preview-with-google-maps.html`);
