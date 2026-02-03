@@ -293,13 +293,36 @@
         class IALAApp {
             constructor() {
                 this.currentScreen = 'home';
+                this.loadUserData();
+                this.init();
+            }
+
+            loadUserData() {
+                // Try to load user data from localStorage
+                const userData = localStorage.getItem('iala_user');
+                const sessionData = localStorage.getItem('iala_session_data');
+                
+                if (userData) {
+                    try {
+                        this.currentUser = JSON.parse(userData);
+                        console.log('Loaded user data:', this.currentUser);
+                    } catch (error) {
+                        console.error('Error parsing user data:', error);
+                        this.setDefaultGuestUser();
+                    }
+                } else {
+                    this.setDefaultGuestUser();
+                }
+            }
+
+            setDefaultGuestUser() {
                 this.currentUser = {
                     id: 'preview_user',
                     role: 'guest',
                     name: 'Preview User',
                     isGuest: true
                 };
-                this.init();
+                console.log('Set default guest user');
             }
 
             init() {
@@ -425,7 +448,7 @@
 
                 return `
                     <div style="padding: 20px;">
-                        <button onclick="window.ghmc_app.navigateToScreen('home')" style="margin-bottom: 20px; padding: 10px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 50%; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">←</button>
+                        <button onclick="window.iala_app.navigateToScreen('home')" style="margin-bottom: 20px; padding: 10px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 50%; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">←</button>
                         <h2>Raise Issue</h2>
                         ${selectedService ? `<p style="color: #666; margin-bottom: 20px; background: #f0f8ff; padding: 12px; border-radius: 6px; border-left: 4px solid #333;"><strong>Selected Category:</strong> ${serviceTitle}</p>` : ''}
                         
@@ -464,7 +487,7 @@
 
                         <!-- Submit Button with enhanced visibility -->
                         <div style="margin-top: 24px; margin-bottom: 24px; padding: 16px 0;">
-                            <button onclick="window.ghmc_app.submitComplaint()" style="width: 100%; padding: 16px; background: #333; color: white; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; font-weight: 600; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: all 0.2s ease;" onmouseover="this.style.background='#555'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='#333'; this.style.transform='translateY(0)'">
+                            <button onclick="window.iala_app.submitComplaint()" style="width: 100%; padding: 16px; background: #333; color: white; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; font-weight: 600; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: all 0.2s ease;" onmouseover="this.style.background='#555'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='#333'; this.style.transform='translateY(0)'">
                                 Submit Complaint
                             </button>
                         </div>
@@ -478,7 +501,7 @@
             getComplaintsScreen() {
                 return `
                     <div style="padding: 20px;">
-                        <button onclick="window.ghmc_app.navigateToScreen('home')" style="margin-bottom: 20px; padding: 10px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 50%; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">←</button>
+                        <button onclick="window.iala_app.navigateToScreen('home')" style="margin-bottom: 20px; padding: 10px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 50%; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">←</button>
                         <h2>My Complaints</h2>
                         
                         <div style="background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px; margin-bottom: 12px;">
@@ -509,33 +532,71 @@
             }
 
             getProfileScreen() {
+                const isGuest = this.currentUser.isGuest || this.currentUser.role === 'guest';
+                const userName = this.currentUser.name || 'User';
+                const userEmail = this.currentUser.email || '';
+                const userMobile = this.currentUser.mobile || '';
+                const userAddress = this.currentUser.address || '';
+                
                 return `
                     <div style="padding: 20px; padding-bottom: 100px;">
-                        <button onclick="window.ghmc_app.navigateToScreen('home')" style="margin-bottom: 20px; padding: 10px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 50%; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">←</button>
+                        <button onclick="window.iala_app.navigateToScreen('home')" style="margin-bottom: 20px; padding: 10px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 50%; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">←</button>
                         <h2>Profile</h2>
-                        <p style="background: #f0f0f0; padding: 8px 12px; border-radius: 6px; font-size: 13px; font-style: italic; margin-bottom: 20px;">You are using guest access</p>
+                        ${isGuest ? 
+                            `<p style="background: #f0f0f0; padding: 8px 12px; border-radius: 6px; font-size: 13px; font-style: italic; margin-bottom: 20px;">You are using guest access</p>` :
+                            `<p style="background: #e8f5e8; padding: 8px 12px; border-radius: 6px; font-size: 13px; font-style: italic; margin-bottom: 20px;">Registered User Account</p>`
+                        }
                         
                         <div style="background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px; margin-bottom: 20px;">
                             <h3 style="margin-bottom: 16px;">Personal Information</h3>
                             <div style="margin-bottom: 16px;">
                                 <label style="display: block; margin-bottom: 6px; font-weight: 500;">Full Name</label>
-                                <input type="text" style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 6px;" placeholder="Not available in guest mode" readonly>
+                                <input type="text" style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 6px;" 
+                                       placeholder="${isGuest ? 'Not available in guest mode' : 'Enter your name'}" 
+                                       value="${isGuest ? '' : userName}" 
+                                       ${isGuest ? 'readonly' : ''}>
                             </div>
                             <div style="margin-bottom: 16px;">
                                 <label style="display: block; margin-bottom: 6px; font-weight: 500;">Mobile Number</label>
-                                <input type="text" style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 6px;" placeholder="Not available in guest mode" readonly>
+                                <input type="text" style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 6px;" 
+                                       placeholder="${isGuest ? 'Not available in guest mode' : 'Enter your mobile number'}" 
+                                       value="${isGuest ? '' : userMobile}" 
+                                       ${isGuest ? 'readonly' : ''}>
                             </div>
-                            <div style="margin-bottom: 0;">
+                            <div style="margin-bottom: 16px;">
                                 <label style="display: block; margin-bottom: 6px; font-weight: 500;">Email</label>
-                                <input type="text" style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 6px;" placeholder="Not available in guest mode" readonly>
+                                <input type="text" style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 6px;" 
+                                       placeholder="${isGuest ? 'Not available in guest mode' : 'Enter your email'}" 
+                                       value="${isGuest ? '' : userEmail}" 
+                                       ${isGuest ? 'readonly' : ''}>
                             </div>
+                            ${!isGuest ? `
+                            <div style="margin-bottom: 16px;">
+                                <label style="display: block; margin-bottom: 6px; font-weight: 500;">Address</label>
+                                <textarea style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 6px; min-height: 80px;" 
+                                          placeholder="Enter your address">${userAddress}</textarea>
+                            </div>
+                            <div style="margin-bottom: 16px;">
+                                <label style="display: block; margin-bottom: 6px; font-weight: 500;">User ID</label>
+                                <input type="text" style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 6px; background: #f8f9fa;" 
+                                       value="${this.currentUser.id || ''}" readonly>
+                            </div>
+                            ` : ''}
                         </div>
 
+                        ${isGuest ? `
                         <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px; padding: 12px; margin-bottom: 20px; text-align: center;">
                             <p style="margin: 0; color: #856404; font-size: 14px;">
                                 <strong>Guest Access:</strong> Limited functionality. Register for full features.
                             </p>
                         </div>
+                        ` : `
+                        <div style="background: #d4edda; border: 1px solid #c3e6cb; border-radius: 6px; padding: 12px; margin-bottom: 20px; text-align: center;">
+                            <p style="margin: 0; color: #155724; font-size: 14px;">
+                                <strong>Registered User:</strong> Full access to all features and complaint tracking.
+                            </p>
+                        </div>
+                        `}
 
                         <div style="margin-bottom: 20px;">
                             <button onclick="logoutUser()" style="width: 100%; padding: 15px; background: #dc3545; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 16px; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2); margin-bottom: 10px;" onmouseover="this.style.background='#c82333'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 8px rgba(220, 53, 69, 0.3)'" onmouseout="this.style.background='#dc3545'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(220, 53, 69, 0.2)'">
@@ -553,7 +614,7 @@
             getIndustrialMapScreen() {
                 return `
                     <div style="padding: 20px;">
-                        <button onclick="window.ghmc_app.navigateToScreen('home')" style="margin-bottom: 20px; padding: 10px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 50%; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">←</button>
+                        <button onclick="window.iala_app.navigateToScreen('home')" style="margin-bottom: 20px; padding: 10px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 50%; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">←</button>
                         <h2>Industrial Map</h2>
                         <p style="color: #666; margin-bottom: 20px;">Industrial zones and facilities in Hyderabad</p>
                         
@@ -585,7 +646,7 @@
                 return `
                     <div style="padding: 20px; height: calc(100vh - 160px); display: flex; flex-direction: column;">
                         <div style="display: flex; align-items: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #e0e0e0;">
-                            <button onclick="window.ghmc_app.navigateToScreen('home')" style="margin-right: 16px; padding: 10px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 50%; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">←</button>
+                            <button onclick="window.iala_app.navigateToScreen('home')" style="margin-right: 16px; padding: 10px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 50%; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">←</button>
                             <div>
                                 <h2 style="margin: 0;">AI Assistant</h2>
                                 <p style="margin: 0; color: #666; font-size: 14px;">24/7 Multilingual Support</p>
@@ -607,14 +668,14 @@
                         </div>
 
                         <div style="display: flex; gap: 8px;">
-                            <input type="text" id="chat-input" placeholder="Type your message here..." style="flex: 1; padding: 12px; border: 1px solid #e0e0e0; border-radius: 6px; font-size: 16px;" onkeypress="if(event.key==='Enter') window.ghmc_app.sendMessage()">
-                            <button onclick="window.ghmc_app.sendMessage()" style="padding: 12px 20px; background: #333; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px;">Send</button>
+                            <input type="text" id="chat-input" placeholder="Type your message here..." style="flex: 1; padding: 12px; border: 1px solid #e0e0e0; border-radius: 6px; font-size: 16px;" onkeypress="if(event.key==='Enter') window.iala_app.sendMessage()">
+                            <button onclick="window.iala_app.sendMessage()" style="padding: 12px 20px; background: #333; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px;">Send</button>
                         </div>
 
                         <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
-                            <button onclick="window.ghmc_app.quickMessage('How do I file a complaint?')" style="padding: 8px 12px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 16px; cursor: pointer; font-size: 14px;">How do I file a complaint?</button>
-                            <button onclick="window.ghmc_app.quickMessage('Track my complaint')" style="padding: 8px 12px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 16px; cursor: pointer; font-size: 14px;">Track my complaint</button>
-                            <button onclick="window.ghmc_app.quickMessage('Emergency contacts')" style="padding: 8px 12px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 16px; cursor: pointer; font-size: 14px;">Emergency contacts</button>
+                            <button onclick="window.iala_app.quickMessage('How do I file a complaint?')" style="padding: 8px 12px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 16px; cursor: pointer; font-size: 14px;">How do I file a complaint?</button>
+                            <button onclick="window.iala_app.quickMessage('Track my complaint')" style="padding: 8px 12px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 16px; cursor: pointer; font-size: 14px;">Track my complaint</button>
+                            <button onclick="window.iala_app.quickMessage('Emergency contacts')" style="padding: 8px 12px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 16px; cursor: pointer; font-size: 14px;">Emergency contacts</button>
                         </div>
                     </div>
                 `;
@@ -627,7 +688,9 @@
             updateUserInterface() {
                 const locationText = document.querySelector('.location-text');
                 if (locationText) {
-                    locationText.textContent = 'Guest Access • Hyderabad, Telangana';
+                    const isGuest = this.currentUser.isGuest || this.currentUser.role === 'guest';
+                    const statusText = isGuest ? 'Guest Access' : `${this.currentUser.name || 'User'}`;
+                    locationText.textContent = `${statusText} • Hyderabad, Telangana`;
                 }
 
                 const chatBtn = document.getElementById('ai-chat-btn');
