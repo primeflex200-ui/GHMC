@@ -67,6 +67,15 @@ class IALAAuthSystem {
             this.handleGuestAccess();
         });
 
+        // Welcome screen navigation
+        document.getElementById('get-started-btn').addEventListener('click', () => {
+            this.showScreen('login-screen');
+        });
+
+        document.getElementById('back-to-welcome').addEventListener('click', () => {
+            this.showScreen('welcome-screen');
+        });
+
         // Additional back buttons
         document.getElementById('back-to-login-from-user').addEventListener('click', () => {
             this.showScreen('login-screen');
@@ -963,6 +972,8 @@ class IALAAuthSystem {
                 citizenAccessSection.style.display = 'none';
             } else if (screenId === 'login-screen') {
                 citizenAccessSection.style.display = 'block';
+            } else if (screenId === 'welcome-screen') {
+                citizenAccessSection.style.display = 'none';
             }
         }
     }

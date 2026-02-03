@@ -8,12 +8,43 @@
 </head>
 <body>
     <div class="auth-container">
+        <!-- Welcome Screen -->
+        <div class="auth-screen active" id="welcome-screen">
+            <div class="welcome-card">
+                <div class="welcome-header">
+                    <div class="app-logo">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7V10C2 16 6 20.9 12 22C18 20.9 22 16 22 10V7L12 2M12 4.3L20 8.2V10C20 15.25 16.87 19.24 12 20.05C7.13 19.24 4 15.25 4 10V8.2L12 4.3M15.5 12L14 13.5L10.5 10L9 11.5L14 16.5L17 13.5L15.5 12Z"/>
+                        </svg>
+                    </div>
+                    <h1>IALA Cherlapally</h1>
+                    <p class="welcome-subtitle">Digital Civic Services Platform</p>
+                    <p class="welcome-message">Welcome to the comprehensive civic management system for IALA Cherlapally. Access administrative tools and citizen services through our secure platform.</p>
+                </div>
+
+                <div class="welcome-actions">
+                    <button class="btn-primary" id="get-started-btn">Get Started</button>
+                </div>
+
+                <div class="welcome-footer">
+                    <p>Secure • Reliable • Efficient</p>
+                </div>
+            </div>
+        </div>
+
         <!-- Login Screen -->
-        <div class="auth-screen active" id="login-screen">
+        <div class="auth-screen" id="login-screen">
             <div class="auth-card">
                 <div class="auth-header">
-                    <h1>IALA Cherlapally Admin Site</h1>
-                    <p>Secure login for authorized personnel</p>
+                    <button class="back-btn" id="back-to-welcome">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    <div class="header-content">
+                        <h1>IALA Cherlapally Admin Site</h1>
+                        <p>Secure login for authorized personnel</p>
+                    </div>
                 </div>
 
                 <form class="auth-form" id="login-form">
