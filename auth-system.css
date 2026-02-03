@@ -586,6 +586,19 @@ body {
     line-height: 1.4;
     margin: 0;
 }
+
+/* Guest Access Button Styling */
+.guest-access-btn {
+    border-top: 1px solid #e0e0e0;
+}
+
+.guest-access-btn .citizen-icon {
+    background: #f8f8f8;
+}
+
+.guest-access-btn:hover .citizen-icon {
+    background: #f0f0f0;
+}
 /* Auth header without back button */
 .auth-header:not(:has(.back-btn)) {
     justify-content: center;

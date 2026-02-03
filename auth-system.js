@@ -56,6 +56,11 @@ class IALAAuthSystem {
             this.showScreen('user-access-screen');
         });
 
+        // Guest access button (direct from main screen)
+        document.getElementById('guest-access-btn').addEventListener('click', () => {
+            this.handleGuestAccess();
+        });
+
         // Additional back buttons
         document.getElementById('back-to-login-from-user').addEventListener('click', () => {
             this.showScreen('login-screen');
