@@ -955,6 +955,16 @@ class IALAAuthSystem {
             screen.classList.remove('active');
         });
         document.getElementById(screenId).classList.add('active');
+        
+        // Hide citizen access section when showing user access screens
+        const citizenAccessSection = document.querySelector('.citizen-access-section');
+        if (citizenAccessSection) {
+            if (screenId === 'user-access-screen' || screenId === 'registration-screen' || screenId === 'user-login-screen') {
+                citizenAccessSection.style.display = 'none';
+            } else if (screenId === 'login-screen') {
+                citizenAccessSection.style.display = 'block';
+            }
+        }
     }
 
     showError(message) {
