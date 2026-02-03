@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>GHMC Mobile - Field Manager</title>
+    <link rel="stylesheet" href="mobile-app-interface.css">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#333333">
+</head>
+<body>
+    <div class="mobile-app">
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-left">
+                <span class="time" id="current-time">--:--</span>
+            </div>
+            <div class="status-right">
+                <span class="connection-status" id="connection-status">●</span>
+                <span class="battery" id="battery-level">100%</span>
+            </div>
+        </div>
+
+        <!-- App Header -->
+        <header class="mobile-header">
+            <div class="header-content">
+                <div class="user-avatar">
+                    <div class="avatar-circle">
+                        <span id="user-initials">FM</span>
+                    </div>
+                </div>
+                <div class="user-info">
+                    <h1 id="user-name">Field Manager</h1>
+                    <p id="user-area">Area: Loading...</p>
+                </div>
+                <div class="header-actions">
+                    <button class="sync-btn" id="sync-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 4 23 10 17 10"/>
+                            <polyline points="1 20 1 14 7 14"/>
+                            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Quick Stats -->
+        <section class="quick-stats">
+            <div class="stat-card">
+                <div class="stat-number" id="pending-count">0</div>
+                <div class="stat-label">Pending</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="progress-count">0</div>
+                <div class="stat-label">In Progress</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="completed-count">0</div>
+                <div class="stat-label">Completed</div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <main class="mobile-main">
+            <!-- Active Complaint Card -->
+            <div class="active-complaint" id="active-complaint" style="display: none;">
+                <div class="complaint-header">
+                    <h3>Active Complaint</h3>
+                    <span class="complaint-id" id="active-complaint-id">--</span>
+                </div>
+                <div class="complaint-details">
+                    <p class="complaint-description" id="active-complaint-description">--</p>
+                    <p class="complaint-location" id="active-complaint-location">--</p>
+                </div>
+                <div class="complaint-actions">
+                    <button class="action-btn primary" id="update-active">Update Status</button>
+                    <button class="action-btn secondary" id="navigate-active">Navigate</button>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <section class="quick-actions-mobile">
+                <div class="actions-grid-mobile">
+                    <button class="mobile-action-card" id="scan-qr">
+                        <div class="action-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="5" height="5"/>
+                                <rect x="16" y="3" width="5" height="5"/>
+                                <rect x="3" y="16" width="5" height="5"/>
+                                <path d="M21 16h-3a2 2 0 0 0-2 2v3"/>
+                                <path d="M21 21v.01"/>
+                                <path d="M12 7v3a2 2 0 0 1-2 2H7"/>
+                                <path d="M3 12h.01"/>
+                                <path d="M12 3h.01"/>
+                                <path d="M12 16v.01"/>
+                                <path d="M16 12h1"/>
+                                <path d="M21 12v.01"/>
+                                <path d="M12 21v-1"/>
+                            </svg>
+                        </div>
+                        <span>Scan QR</span>
+                    </button>
+
+                    <button class="mobile-action-card" id="take-photo">
+                        <div class="action-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                                <circle cx="12" cy="13" r="4"/>
+                            </svg>
+                        </div>
+                        <span>Take Photo</span>
+                    </button>
+
+                    <button class="mobile-action-card" id="voice-note">
+                        <div class="action-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                                <line x1="12" y1="19" x2="12" y2="23"/>
+                                <line x1="8" y1="23" x2="16" y2="23"/>
+                            </svg>
+                        </div>
+                        <span>Voice Note</span>
+                    </button>
+
+                    <button class="mobile-action-card" id="gps-location">
+                        <div class="action-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="10" r="3"/>
+                                <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 7 8 11.7z"/>
+                            </svg>
+                        </div>
+                        <span>Get Location</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Complaints List -->
+            <section class="complaints-mobile">
+                <div class="section-header-mobile">
+                    <h2>My Assignments</h2>
+                    <div class="filter-toggle" id="filter-toggle">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Filter Bar -->
+                <div class="filter-bar" id="filter-bar" style="display: none;">
+                    <select class="mobile-filter" id="status-filter-mobile">
+                        <option value="">All Status</option>
+                        <option value="assigned">Assigned</option>
+                        <option value="in-progress">In Progress</option>
+                        <option value="pending-verification">Pending Verification</option>
+                    </select>
+                    <select class="mobile-filter" id="priority-filter-mobile">
+                        <option value="">All Priority</option>
+                        <option value="critical">Critical</option>
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                </div>
+
+                <div class="complaints-list-mobile" id="complaints-list-mobile">
+                    <!-- Complaints will be populated here -->
+                </div>
+            </section>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav-mobile">
+            <button class="nav-item-mobile active" data-screen="home">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9,22 9,12 15,12 15,22"/>
+                </svg>
+                <span>Home</span>
+            </button>
+            <button class="nav-item-mobile" data-screen="map">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
+                    <line x1="8" y1="2" x2="8" y2="18"/>
+                    <line x1="16" y1="6" x2="16" y2="22"/>
+                </svg>
+                <span>Map</span>
+            </button>
+            <button class="nav-item-mobile" data-screen="camera">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                    <circle cx="12" cy="13" r="4"/>
+                </svg>
+                <span>Camera</span>
+            </button>
+            <button class="nav-item-mobile" data-screen="profile">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+                <span>Profile</span>
+            </button>
+        </nav>
+
+        <!-- Update Modal -->
+        <div class="mobile-modal" id="update-modal">
+            <div class="modal-backdrop" id="modal-backdrop"></div>
+            <div class="modal-content-mobile">
+                <div class="modal-header-mobile">
+                    <h3>Update Status</h3>
+                    <button class="close-btn-mobile" id="close-update-modal">&times;</button>
+                </div>
+                
+                <div class="modal-body-mobile">
+                    <div class="complaint-summary-mobile" id="complaint-summary-mobile">
+                        <!-- Complaint details will be shown here -->
+                    </div>
+                    
+                    <form class="update-form-mobile" id="update-form-mobile">
+                        <div class="form-group-mobile">
+                            <label class="form-label-mobile">New Status</label>
+                            <select class="form-input-mobile" id="status-update-mobile" required>
+                                <option value="">Select Status</option>
+                                <option value="in-progress">Start Work</option>
+                                <option value="pending-verification">Work Completed</option>
+                                <option value="resolved">Mark Resolved</option>
+                                <option value="escalate">Escalate</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group-mobile">
+                            <label class="form-label-mobile">Notes</label>
+                            <textarea class="form-input-mobile" id="progress-notes-mobile" rows="3" placeholder="Add progress notes..."></textarea>
+                        </div>
+
+                        <div class="form-group-mobile">
+                            <label class="form-label-mobile">Attach Photo</label>
+                            <div class="photo-capture">
+                                <button type="button" class="capture-btn" id="capture-photo">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                                        <circle cx="12" cy="13" r="4"/>
+                                    </svg>
+                                    Take Photo
+                                </button>
+                                <input type="file" id="photo-input-mobile" accept="image/*" capture="environment" style="display: none;">
+                                <div class="photo-preview" id="photo-preview-mobile"></div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="modal-footer-mobile">
+                    <button class="btn-mobile btn-primary-mobile" id="submit-update-mobile">Update</button>
+                    <button class="btn-mobile btn-secondary-mobile" id="cancel-update-mobile">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Offline Indicator -->
+        <div class="offline-indicator" id="offline-indicator" style="display: none;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="1" y1="1" x2="23" y2="23"/>
+                <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/>
+                <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/>
+                <path d="M10.71 5.05A16 16 0 0 1 22.58 9"/>
+                <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/>
+                <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+                <line x1="12" y1="20" x2="12.01" y2="20"/>
+            </svg>
+            <span>Working Offline</span>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loading-overlay" style="display: none;">
+            <div class="loading-spinner"></div>
+            <p>Syncing data...</p>
+        </div>
+    </div>
+
+    <script src="mobile-app-interface.js"></script>
+</body>
+</html>

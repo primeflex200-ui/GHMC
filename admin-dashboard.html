@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GHMC Admin Dashboard - AI Complaints</title>
+    <link rel="stylesheet" href="admin-dashboard.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-content">
+                <h1>GHMC Admin Dashboard</h1>
+                <div class="header-info">
+                    <span class="admin-name">Admin User</span>
+                    <span class="last-updated">Last Updated: <span id="last-updated-time">--</span></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Stats Overview -->
+        <section class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-complaints">0</div>
+                    <div class="stat-label">Total AI Complaints</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pending-complaints">0</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="in-progress-complaints">0</div>
+                    <div class="stat-label">In Progress</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="resolved-complaints">0</div>
+                    <div class="stat-label">Resolved</div>
+                </div>
+                <div class="stat-card signup-requests">
+                    <div class="stat-number" id="pending-signups-count">0</div>
+                    <div class="stat-label">Pending Signups</div>
+                    <div class="signup-notification-badge" style="display: none;">0</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filters and Controls -->
+        <section class="controls-section">
+            <div class="filters">
+                <select class="filter-select" id="status-filter">
+                    <option value="">All Status</option>
+                    <option value="submitted">Submitted</option>
+                    <option value="assigned">Assigned</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="resolved">Resolved</option>
+                    <option value="escalated">Escalated</option>
+                </select>
+
+                <select class="filter-select" id="category-filter">
+                    <option value="">All Categories</option>
+                    <option value="street-light">Street Light</option>
+                    <option value="pothole">Road Pothole</option>
+                    <option value="garbage">Garbage</option>
+                    <option value="water-supply">Water Supply</option>
+                    <option value="drainage">Drainage</option>
+                    <option value="cctv">CCTV</option>
+                    <option value="incident">Incident</option>
+                    <option value="fogging">Fogging</option>
+                    <option value="green-belt">Green Belt</option>
+                </select>
+
+                <select class="filter-select" id="team-filter">
+                    <option value="">All Teams</option>
+                    <option value="Electrical Maintenance Team">Electrical Maintenance</option>
+                    <option value="Road Maintenance Team">Road Maintenance</option>
+                    <option value="Waste Management Team">Waste Management</option>
+                    <option value="Water Supply Team">Water Supply</option>
+                    <option value="Drainage Team">Drainage</option>
+                    <option value="Security Team">Security</option>
+                    <option value="General Services Team">General Services</option>
+                    <option value="Health Department">Health Department</option>
+                    <option value="Parks & Gardens Team">Parks & Gardens</option>
+                </select>
+
+                <button class="btn-secondary" id="refresh-btn">Refresh</button>
+                <button class="btn-secondary" id="export-btn">Export Data</button>
+            </div>
+        </section>
+
+        <!-- Complaints Table -->
+        <section class="complaints-section">
+            <div class="section-header">
+                <h2>AI-Captured Complaints</h2>
+                <div class="view-toggle">
+                    <button class="toggle-btn active" data-view="table">Table View</button>
+                    <button class="toggle-btn" data-view="cards">Card View</button>
+                </div>
+            </div>
+
+            <!-- Table View -->
+            <div class="table-container" id="table-view">
+                <table class="complaints-table">
+                    <thead>
+                        <tr>
+                            <th>Complaint ID</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Assigned Team</th>
+                            <th>Language</th>
+                            <th>Submitted</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="complaints-table-body">
+                        <!-- Complaints will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Card View -->
+            <div class="cards-container" id="cards-view" style="display: none;">
+                <div id="complaints-cards">
+                    <!-- Complaint cards will be populated here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Pending Signup Requests Section -->
+        <section class="signups-section">
+            <div class="section-header">
+                <h2>Pending Management Signup Requests</h2>
+                <div class="signup-info">
+                    <span class="info-text">Review and approve management role requests</span>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="signups-table">
+                    <thead>
+                        <tr>
+                            <th>Request ID</th>
+                            <th>Name</th>
+                            <th>Employee ID</th>
+                            <th>Requested Role</th>
+                            <th>Department</th>
+                            <th>Request Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pending-signups-table-body">
+                        <!-- Pending signups will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Complaint Detail Modal -->
+        <div class="modal" id="complaint-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Complaint Details</h3>
+                    <button class="close-btn" id="close-modal">&times;</button>
+                </div>
+                <div class="modal-body" id="modal-body">
+                    <!-- Complaint details will be populated here -->
+                </div>
+                <div class="modal-footer">
+                    <select class="status-update-select" id="status-update">
+                        <option value="">Update Status</option>
+                        <option value="assigned">Assign</option>
+                        <option value="in-progress">Mark In Progress</option>
+                        <option value="resolved">Mark Resolved</option>
+                        <option value="escalated">Escalate</option>
+                    </select>
+                    <button class="btn" id="update-status-btn">Update</button>
+                    <button class="btn-secondary" id="close-modal-btn">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Signup Request Detail Modal -->
+        <div class="modal" id="signup-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Signup Request Details</h3>
+                    <button class="close-btn" id="close-signup-modal">&times;</button>
+                </div>
+                <div class="modal-body" id="signup-modal-body">
+                    <!-- Signup request details will be populated here -->
+                </div>
+                <div class="modal-footer">
+                    <button class="btn approve-btn" id="approve-signup-btn">Approve Request</button>
+                    <button class="btn reject-btn" id="reject-signup-btn">Reject Request</button>
+                    <button class="btn-secondary" id="close-signup-modal-btn">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="ai-integration.js"></script>
+    <script src="auth-system.js"></script>
+    <script src="admin-dashboard.js"></script>
+</body>
+</html>

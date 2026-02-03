@@ -1,0 +1,22 @@
+# Netlify/GitHub Pages redirects for GHMC Civic Services
+
+# Default redirect to auth system (login page)
+/  /auth-system.html  200
+
+# Guest access redirect
+/guest  /index.html?access=guest  200
+
+# Login redirect
+/login  /auth-system.html  200
+
+# Industrial map redirect
+/map  /industrial-map-google.html  200
+
+# AI assistant redirect
+/ai  /ai-module.html  200
+
+# Admin dashboard redirect
+/admin  /admin-dashboard.html  200
+
+# Analytics redirect
+/analytics  /analytics-dashboard.html  200

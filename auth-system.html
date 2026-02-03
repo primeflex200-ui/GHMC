@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GHMC Access Control System</title>
+    <link rel="stylesheet" href="auth-system.css">
+</head>
+<body>
+    <div class="auth-container">
+        <!-- Login Screen -->
+        <div class="auth-screen active" id="login-screen">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <h1>GHMC Access Control</h1>
+                    <p>Secure login for authorized personnel</p>
+                </div>
+
+                <form class="auth-form" id="login-form">
+                    <div class="form-group">
+                        <label class="form-label">User ID</label>
+                        <input type="text" class="form-input" id="user-id" placeholder="Enter your user ID" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-input" id="password" placeholder="Enter your password" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Role</label>
+                        <select class="form-input" id="role-select" required>
+                            <option value="">Select your role</option>
+                            <option value="employee">Employee</option>
+                            <option value="field-manager">Field Manager</option>
+                            <option value="officer-manager">Officer Manager</option>
+                            <option value="admin">Administrator</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Login</button>
+                </form>
+
+                <div class="auth-footer">
+                    <p>For technical support, contact IT Department</p>
+                    <div class="auth-links">
+                        <button class="link-btn" id="show-signup">New Management Account? Sign Up</button>
+                        <button class="link-btn" id="clear-session" style="margin-top: 8px;">Clear All Sessions (Testing)</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Citizen Access Section -->
+        <div class="citizen-access-section">
+            <div class="citizen-access-card">
+                <div class="citizen-header">
+                    <h2>Citizen Access</h2>
+                    <p>Access GHMC civic services as a citizen</p>
+                </div>
+                
+                <button class="citizen-access-btn" id="citizen-access-btn">
+                    <div class="citizen-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </div>
+                    <div class="citizen-text">
+                        <h3>Normal User Access</h3>
+                        <p>Submit complaints and access civic services</p>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Role Selection for Normal Users -->
+        <div class="auth-screen" id="user-access-screen">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <button class="back-btn" id="back-to-login-from-user">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    <div class="header-content">
+                        <h2>Citizen Access</h2>
+                        <p>Choose how you'd like to access GHMC services</p>
+                    </div>
+                </div>
+
+                <div class="access-options">
+                    <button class="access-option" id="guest-access">
+                        <div class="option-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                        </div>
+                        <h3>Guest Access</h3>
+                        <p>Quick access without registration</p>
+                    </button>
+
+                    <button class="access-option" id="registered-access">
+                        <div class="option-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                <circle cx="12" cy="16" r="1"/>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                        </div>
+                        <h3>Registered User</h3>
+                        <p>Full access with complaint tracking</p>
+                    </button>
+                </div>
+
+                <div class="auth-footer">
+                    <button class="btn-secondary" id="back-to-login">Back to Login</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Registration Screen -->
+        <div class="auth-screen" id="registration-screen">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <button class="back-btn" id="back-to-user-from-reg">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    <div class="header-content">
+                        <h2>User Registration</h2>
+                        <p>Create your GHMC citizen account</p>
+                    </div>
+                </div>
+
+                <form class="auth-form" id="registration-form">
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-input" id="reg-name" placeholder="Enter your full name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Mobile Number</label>
+                        <input type="tel" class="form-input" id="reg-mobile" placeholder="Enter mobile number" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-input" id="reg-email" placeholder="Enter email address" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Address</label>
+                        <textarea class="form-input" id="reg-address" placeholder="Enter your address" rows="3" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Create Password</label>
+                        <input type="password" class="form-input" id="reg-password" placeholder="Create a password" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Confirm Password</label>
+                        <input type="password" class="form-input" id="reg-confirm-password" placeholder="Confirm your password" required>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Register</button>
+                </form>
+
+                <div class="auth-footer">
+                    <button class="btn-secondary" id="back-to-user-access">Back</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Management Signup Screen -->
+        <div class="auth-screen" id="management-signup-screen">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <button class="back-btn" id="back-to-login-from-signup">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    <div class="header-content">
+                        <h2>Management Account Signup</h2>
+                        <p>Request access for management roles</p>
+                        <div class="signup-notice">
+                            <small>⚠️ All management accounts require administrator approval</small>
+                        </div>
+                    </div>
+                </div>
+
+                <form class="auth-form" id="management-signup-form">
+                    <div class="form-group">
+                        <label class="form-label">Management Role</label>
+                        <select class="form-input" id="management-role-select" required>
+                            <option value="">Select management role</option>
+                            <option value="admin">Administrator</option>
+                            <option value="field-manager">Field Manager</option>
+                            <option value="officer-manager">Officer Manager</option>
+                        </select>
+                        <div class="role-description" id="role-description"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-input" id="mgmt-name" placeholder="Enter your full name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Employee ID</label>
+                        <input type="text" class="form-input" id="mgmt-employee-id" placeholder="Enter your GHMC employee ID" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Official Email</label>
+                        <input type="email" class="form-input" id="mgmt-email" placeholder="Enter your official GHMC email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Mobile Number</label>
+                        <input type="tel" class="form-input" id="mgmt-mobile" placeholder="Enter mobile number" required>
+                    </div>
+
+                    <div class="form-group" id="department-group" style="display: none;">
+                        <label class="form-label">Department</label>
+                        <select class="form-input" id="mgmt-department">
+                            <option value="">Select department</option>
+                            <option value="electrical">Electrical</option>
+                            <option value="road-maintenance">Road Maintenance</option>
+                            <option value="waste-management">Waste Management</option>
+                            <option value="water-supply">Water Supply</option>
+                            <option value="drainage">Drainage</option>
+                            <option value="security">Security</option>
+                            <option value="health">Health</option>
+                            <option value="parks">Parks & Gardens</option>
+                            <option value="general">General Services</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="area-group" style="display: none;">
+                        <label class="form-label">Area of Responsibility</label>
+                        <select class="form-input" id="mgmt-area">
+                            <option value="">Select area</option>
+                            <option value="banjara-hills">Banjara Hills</option>
+                            <option value="jubilee-hills">Jubilee Hills</option>
+                            <option value="madhapur">Madhapur</option>
+                            <option value="gachibowli">Gachibowli</option>
+                            <option value="kondapur">Kondapur</option>
+                            <option value="kukatpally">Kukatpally</option>
+                            <option value="secunderabad">Secunderabad</option>
+                            <option value="hitech-city">Hitech City</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Justification</label>
+                        <textarea class="form-input" id="mgmt-justification" rows="4" placeholder="Explain why you need this management role access..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Supervisor/Reference</label>
+                        <input type="text" class="form-input" id="mgmt-supervisor" placeholder="Name and contact of your supervisor" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Create Password</label>
+                        <input type="password" class="form-input" id="mgmt-password" placeholder="Create a secure password" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Confirm Password</label>
+                        <input type="password" class="form-input" id="mgmt-confirm-password" placeholder="Confirm your password" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="mgmt-terms" required>
+                            <span class="checkmark"></span>
+                            I agree to the GHMC management access terms and conditions
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Submit Signup Request</button>
+                </form>
+
+                <div class="auth-footer">
+                    <button class="btn-secondary" id="back-to-login">Back to Login</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth-system.js"></script>
+</body>
+</html>

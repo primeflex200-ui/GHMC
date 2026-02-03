@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GHMC Civic Services</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
+          crossorigin=""/>
+    <!-- Leaflet MarkerCluster CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <h1>GHMC Civic Services</h1>
+            <div class="header-actions">
+                <div class="location-info">
+                    <span class="location-text">Hyderabad, Telangana</span>
+                </div>
+                <button class="chat-btn" id="ai-chat-btn" title="AI Assistant">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content" id="main-content">
+            <!-- Home Screen -->
+            <div class="screen active" id="home-screen">
+                <div class="services-grid">
+                    <div class="service-card" data-service="street-light">
+                        <div class="service-icon">
+                            <img src="street-light.png" alt="Street Light" style="width: 64px; height: 48px; object-fit: cover; border-radius: 6px;">
+                        </div>
+                        <h3>Street Light</h3>
+                        <p>Report street lighting issues</p>
+                    </div>
+
+                    <div class="service-card" data-service="pothole">
+                        <div class="service-icon">
+                            <img src="road-pothole.png" alt="Road Pothole" style="width: 64px; height: 48px; object-fit: cover; border-radius: 6px;">
+                        </div>
+                        <h3>Road Pothole</h3>
+                        <p>Report road damage and potholes</p>
+                    </div>
+
+                    <div class="service-card" data-service="garbage">
+                        <div class="service-icon">
+                            <img src="garbage.png" alt="Garbage" style="width: 64px; height: 48px; object-fit: cover; border-radius: 6px;">
+                        </div>
+                        <h3>Garbage</h3>
+                        <p>Report waste collection issues</p>
+                    </div>
+
+                    <div class="service-card" data-service="water-supply">
+                        <div class="service-icon">
+                            <img src="water-supply.png" alt="Water Supply" style="width: 64px; height: 48px; object-fit: cover; border-radius: 6px;">
+                        </div>
+                        <h3>Water Supply</h3>
+                        <p>Report water supply problems</p>
+                    </div>
+
+                    <div class="service-card" data-service="drainage">
+                        <div class="service-icon">
+                            <img src="drainage.png" alt="Drainage" style="width: 64px; height: 48px; object-fit: cover; border-radius: 6px;">
+                        </div>
+                        <h3>Drainage</h3>
+                        <p>Report drainage and sewage issues</p>
+                    </div>
+
+                    <div class="service-card" data-service="cctv">
+                        <div class="service-icon">
+                            <img src="cctv.png" alt="CCTV" style="width: 64px; height: 48px; object-fit: cover; border-radius: 6px;">
+                        </div>
+                        <h3>CCTV</h3>
+                        <p>Report security camera issues</p>
+                    </div>
+
+                    <div class="service-card" data-service="incident">
+                        <div class="service-icon">
+                            <img src="incident-reporting.png" alt="Incident Reporting" style="width: 64px; height: 48px; object-fit: cover; border-radius: 6px;">
+                        </div>
+                        <h3>Incident Reporting</h3>
+                        <p>Report general incidents</p>
+                    </div>
+
+                    <div class="service-card" data-service="fogging">
+                        <div class="service-icon">
+                            <img src="fogging.png" alt="Fogging" style="width: 64px; height: 48px; object-fit: cover; border-radius: 6px;">
+                        </div>
+                        <h3>Fogging</h3>
+                        <p>Request mosquito fogging</p>
+                    </div>
+
+                    <div class="service-card" data-service="green-belt">
+                        <div class="service-icon">
+                            <img src="green-belt.png" alt="Green Belt" style="width: 64px; height: 48px; object-fit: cover; border-radius: 6px;">
+                        </div>
+                        <h3>Green Belt</h3>
+                        <p>Report park and garden issues</p>
+                    </div>
+                </div>
+
+                <!-- Special Industrial Map Access Card -->
+                <div style="margin-top: 20px; padding: 16px; background: linear-gradient(135deg, #28a745, #20c997); border-radius: 12px; color: white; text-align: center; cursor: pointer; box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3); transition: all 0.2s ease;" onclick="openIndustrialMap(); return false;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(40, 167, 69, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(40, 167, 69, 0.3)'">
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 12px;">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                            <circle cx="12" cy="10" r="3"/>
+                        </svg>
+                        <div>
+                            <h3 style="margin: 0; font-size: 18px; font-weight: 600;">Industrial Map (Google Maps)</h3>
+                            <p style="margin: 4px 0 0 0; font-size: 14px; opacity: 0.9;">View real-time industry locations with interactive Google Maps</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Debug Test Section -->
+                <div style="margin-top: 16px; padding: 12px; background: #f8f8f8; border-radius: 8px; border: 1px solid #e0e0e0;">
+                    <h4 style="margin: 0 0 8px 0; color: #333; font-size: 14px;">Industrial Map Access Test</h4>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button onclick="openIndustrialMap()" style="padding: 6px 12px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">🗺️ Open Map (Function)</button>
+                        <button onclick="window.open('industrial-map-google.html', '_blank')" style="padding: 6px 12px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">🔗 Direct Link</button>
+                        <button onclick="window.location.href='industrial-map-google.html'" style="padding: 6px 12px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">➡️ Navigate</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-screen="home">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9,22 9,12 15,12 15,22"/>
+                </svg>
+                <span>Home</span>
+            </button>
+            <button class="nav-item" data-screen="raise-issue">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                <span>Raise Issue</span>
+            </button>
+            <button class="nav-item" data-screen="complaints">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14,2 14,8 20,8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                    <polyline points="10,9 9,9 8,9"/>
+                </svg>
+                <span>My Complaints</span>
+            </button>
+            <button class="nav-item" data-screen="industrial-map" onclick="window.open('industrial-map-google.html', '_blank'); return false;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                </svg>
+                <span>Industrial Map</span>
+            </button>
+            <button class="nav-item" data-screen="profile">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+                <span>Profile</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" 
+            crossorigin=""></script>
+    <!-- Leaflet MarkerCluster JavaScript -->
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+
+    <script>
+        // Redirect to login on page refresh/direct access
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user came from login or has valid session
+            const urlParams = new URLSearchParams(window.location.search);
+            const hasGuestAccess = urlParams.get('access') === 'guest';
+            const hasSessionId = urlParams.get('session');
+            const hasStoredSession = localStorage.getItem('ghmc_session') || 
+                                   localStorage.getItem('ghmc_user') || 
+                                   sessionStorage.getItem('ghmc_user_session');
+            
+            // Allow access if any of these conditions are met:
+            // 1. Guest access parameter
+            // 2. Session ID in URL (from login redirect)
+            // 3. Valid stored session data
+            const hasValidAccess = hasGuestAccess || hasSessionId || hasStoredSession;
+            
+            if (!hasValidAccess) {
+                console.log('No valid access found, redirecting to login');
+                window.location.replace('auth-system.html');
+                return;
+            }
+            
+            console.log('Valid access found, continuing with app initialization');
+            console.log('Guest access:', hasGuestAccess);
+            console.log('Session ID:', hasSessionId);
+            console.log('Stored session:', !!hasStoredSession);
+        });
+
+        // Function to open Industrial Map
+        function openIndustrialMap() {
+            console.log('Opening Industrial Map...');
+            console.log('Current URL:', window.location.href);
+            console.log('Target URL:', window.location.origin + '/industrial-map-google.html');
+            
+            try {
+                const targetUrl = 'industrial-map-google.html';
+                console.log('Attempting to open:', targetUrl);
+                
+                const mapWindow = window.open(targetUrl, '_blank', 'noopener,noreferrer');
+                
+                if (!mapWindow || mapWindow.closed || typeof mapWindow.closed == 'undefined') {
+                    console.log('Popup blocked, using fallback navigation');
+                    // Fallback if popup blocked
+                    window.location.href = targetUrl;
+                } else {
+                    console.log('Successfully opened in new tab');
+                }
+            } catch (error) {
+                console.error('Error opening Industrial Map:', error);
+                // Fallback navigation
+                alert('Opening Industrial Map...');
+                window.location.href = 'industrial-map-google.html';
+            }
+        }
+
+        // Full JavaScript for proper navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the app
+            window.ghmc_app = new GHMCApp();
+        });
+
+        // Global logout function
+        function logoutUser() {
+            console.log('Global logout function called');
+            
+            try {
+                // Clear all session data (both guest and role-based sessions)
+                sessionStorage.clear();
+                localStorage.removeItem('ghmc_session');
+                localStorage.removeItem('ghmc_user');
+                localStorage.removeItem('ghmc_session_data');
+                localStorage.removeItem('ghmc_user_session');
+                console.log('All session data cleared');
+                
+                // Show logout confirmation
+                const confirmed = confirm('Are you sure you want to logout and return to the login page?');
+                if (confirmed) {
+                    console.log('Logout confirmed, redirecting to login page');
+                    
+                    // Force redirect to login page immediately
+                    window.location.href = 'auth-system.html';
+                    
+                } else {
+                    console.log('Logout cancelled by user');
+                }
+            } catch (error) {
+                console.error('Error during logout:', error);
+                // Force redirect even if there's an error
+                alert('Logging out...');
+                window.location.href = 'auth-system.html';
+            }
+        }
+
+        // Alternative logout function for testing
+        function forceLogout() {
+            console.log('Force logout called');
+            sessionStorage.clear();
+            localStorage.removeItem('ghmc_session');
+            localStorage.removeItem('ghmc_user');
+            localStorage.removeItem('ghmc_session_data');
+            localStorage.removeItem('ghmc_user_session');
+            window.location.href = 'auth-system.html';
+        }
+
+        // GHMC Civic Services App JavaScript
+        class GHMCApp {
+            constructor() {
+                this.currentScreen = 'home';
+                this.currentUser = {
+                    id: 'preview_user',
+                    role: 'guest',
+                    name: 'Preview User',
+                    isGuest: true
+                };
+                this.init();
+            }
+
+            init() {
+                this.setupNavigation();
+                this.setupServiceCards();
+                this.setupChatButton();
+                this.updateUserInterface();
+            }
+
+            setupNavigation() {
+                const navItems = document.querySelectorAll('.nav-item');
+                navItems.forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        const screen = item.dataset.screen;
+                        
+                        // Special handling for Industrial Map - redirect to Google Maps page
+                        if (screen === 'industrial-map') {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            openIndustrialMap();
+                            return false;
+                        }
+                        
+                        this.navigateToScreen(screen);
+                    });
+                });
+            }
+
+            setupServiceCards() {
+                const serviceCards = document.querySelectorAll('.service-card');
+                serviceCards.forEach(card => {
+                    card.addEventListener('click', (e) => {
+                        const service = card.dataset.service;
+                        this.selectService(service);
+                    });
+                });
+            }
+
+            setupChatButton() {
+                const chatBtn = document.getElementById('ai-chat-btn');
+                if (chatBtn) {
+                    chatBtn.addEventListener('click', () => {
+                        this.navigateToScreen('ai-chat');
+                    });
+                }
+            }
+
+            selectService(serviceName) {
+                console.log('Service selected:', serviceName); // Debug log
+                sessionStorage.setItem('selectedService', serviceName);
+                this.navigateToScreen('raise-issue');
+            }
+
+            navigateToScreen(screenName) {
+                // Update navigation active state
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                const navItem = document.querySelector(`[data-screen="${screenName}"]`);
+                if (navItem) {
+                    navItem.classList.add('active');
+                }
+
+                // Hide all screens
+                document.querySelectorAll('.screen').forEach(screen => {
+                    screen.classList.remove('active');
+                });
+
+                // Show target screen or create it
+                let targetScreen = document.getElementById(`${screenName}-screen`);
+                if (!targetScreen) {
+                    this.createScreen(screenName);
+                    targetScreen = document.getElementById(`${screenName}-screen`);
+                }
+                
+                if (targetScreen) {
+                    targetScreen.classList.add('active');
+                }
+
+                this.currentScreen = screenName;
+            }
+
+            createScreen(screenName) {
+                const mainContent = document.getElementById('main-content');
+                let screenHTML = '';
+
+                switch (screenName) {
+                    case 'raise-issue':
+                        screenHTML = this.getRaiseIssueScreen();
+                        break;
+                    case 'complaints':
+                        screenHTML = this.getComplaintsScreen();
+                        break;
+                    case 'profile':
+                        screenHTML = this.getProfileScreen();
+                        break;
+                    case 'industrial-map':
+                        screenHTML = this.getIndustrialMapScreen();
+                        break;
+                    case 'ai-chat':
+                        screenHTML = this.getAIChatScreen();
+                        break;
+                    default:
+                        return;
+                }
+
+                const screenDiv = document.createElement('div');
+                screenDiv.className = 'screen';
+                screenDiv.id = `${screenName}-screen`;
+                screenDiv.innerHTML = screenHTML;
+                mainContent.appendChild(screenDiv);
+
+                this.setupScreenFunctionality(screenName);
+            }
+
+            getRaiseIssueScreen() {
+                const selectedService = sessionStorage.getItem('selectedService') || '';
+                const serviceTitle = this.getServiceTitle(selectedService);
+                
+                console.log('Building Raise Issue screen for service:', selectedService); // Debug log
+                console.log('Service title:', serviceTitle); // Debug log
+
+                return `
+                    <div style="padding: 20px;">
+                        <button onclick="window.ghmc_app.navigateToScreen('home')" style="margin-bottom: 20px; padding: 10px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 50%; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">←</button>
+                        <h2>Raise Issue</h2>
+                        ${selectedService ? `<p style="color: #666; margin-bottom: 20px; background: #f0f8ff; padding: 12px; border-radius: 6px; border-left: 4px solid #333;"><strong>Selected Category:</strong> ${serviceTitle}</p>` : ''}
+                        
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 6px; font-weight: 500;">Issue Category</label>
+                            <select id="category-dropdown" style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 6px; background: ${selectedService ? '#f0f8ff' : 'white'};">
+                                <option value="">Select Category</option>
+                                <option value="street-light" ${selectedService === 'street-light' ? 'selected' : ''}>Street Light</option>
+                                <option value="pothole" ${selectedService === 'pothole' ? 'selected' : ''}>Road Pothole</option>
+                                <option value="garbage" ${selectedService === 'garbage' ? 'selected' : ''}>Garbage</option>
+                                <option value="water-supply" ${selectedService === 'water-supply' ? 'selected' : ''}>Water Supply</option>
+                                <option value="drainage" ${selectedService === 'drainage' ? 'selected' : ''}>Drainage</option>
+                                <option value="cctv" ${selectedService === 'cctv' ? 'selected' : ''}>CCTV</option>
+                                <option value="incident" ${selectedService === 'incident' ? 'selected' : ''}>Incident Reporting</option>
+                                <option value="fogging" ${selectedService === 'fogging' ? 'selected' : ''}>Fogging</option>
+                                <option value="green-belt" ${selectedService === 'green-belt' ? 'selected' : ''}>Green Belt</option>
+                            </select>
+                        </div>
+
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 6px; font-weight: 500;">Location</label>
+                            <input type="text" style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 6px;" placeholder="Auto-detected: Current Location" readonly>
+                            <button onclick="alert('Location detected: Road No. 45, Jubilee Hills, Hyderabad - 500033')" style="margin-top: 8px; padding: 8px 16px; background: #f8f8f8; border: 1px solid #e0e0e0; border-radius: 4px; cursor: pointer;">📍 Detect Current Location</button>
+                        </div>
+
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 6px; font-weight: 500;">Description</label>
+                            <textarea id="description-field" style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 6px; min-height: 100px;" placeholder="${selectedService ? `Describe the ${serviceTitle.toLowerCase()} issue in detail...` : 'Describe the issue in detail...'}" required></textarea>
+                        </div>
+
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 6px; font-weight: 500;">Photo (Optional)</label>
+                            <input type="file" accept="image/*" style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 6px;">
+                            <p style="font-size: 12px; color: #666; margin-top: 4px;">Upload a photo to help us understand the issue better</p>
+                        </div>
+
+                        <button onclick="window.ghmc_app.submitComplaint()" style="width: 100%; padding: 12px; background: #333; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: 500;">Submit Complaint</button>
+                    </div>
+                `;
+            }
+
+            getComplaintsScreen() {
+                return `
+                    <div style="padding: 20px;">
+                        <button onclick="window.ghmc_app.navigateToScreen('home')" style="margin-bottom: 20px; padding: 10px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 50%; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">←</button>
+                        <h2>My Complaints</h2>
+                        
+                        <div style="background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px; margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <div>
+                                    <div style="font-size: 16px; font-weight: 600;">Street Light Not Working</div>
+                                    <div style="font-size: 12px; color: #666;">Complaint ID: GHMC2024001</div>
+                                </div>
+                                <span style="background: #d0d0d0; color: #000; padding: 4px 8px; border-radius: 4px; font-size: 11px;">In Progress</span>
+                            </div>
+                            <p><strong>Location:</strong> Road No. 12, Banjara Hills</p>
+                            <p><strong>Submitted:</strong> Jan 28, 2024</p>
+                        </div>
+
+                        <div style="background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px; margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <div>
+                                    <div style="font-size: 16px; font-weight: 600;">Road Pothole</div>
+                                    <div style="font-size: 12px; color: #666;">Complaint ID: GHMC2024002</div>
+                                </div>
+                                <span style="background: #333; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 11px;">Resolved</span>
+                            </div>
+                            <p><strong>Location:</strong> Jubilee Hills Main Road</p>
+                            <p><strong>Resolved:</strong> Jan 29, 2024</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            getProfileScreen() {
+                return `
+                    <div style="padding: 20px; padding-bottom: 100px;">
+                        <button onclick="window.ghmc_app.navigateToScreen('home')" style="margin-bottom: 20px; padding: 10px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 50%; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">←</button>
+                        <h2>Profile</h2>
+                        <p style="background: #f0f0f0; padding: 8px 12px; border-radius: 6px; font-size: 13px; font-style: italic; margin-bottom: 20px;">You are using guest access</p>
+                        
+                        <div style="background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+                            <h3 style="margin-bottom: 16px;">Personal Information</h3>
+                            <div style="margin-bottom: 16px;">
+                                <label style="display: block; margin-bottom: 6px; font-weight: 500;">Full Name</label>
+                                <input type="text" style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 6px;" placeholder="Not available in guest mode" readonly>
+                            </div>
+                            <div style="margin-bottom: 16px;">
+                                <label style="display: block; margin-bottom: 6px; font-weight: 500;">Mobile Number</label>
+                                <input type="text" style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 6px;" placeholder="Not available in guest mode" readonly>
+                            </div>
+                            <div style="margin-bottom: 0;">
+                                <label style="display: block; margin-bottom: 6px; font-weight: 500;">Email</label>
+                                <input type="text" style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 6px;" placeholder="Not available in guest mode" readonly>
+                            </div>
+                        </div>
+
+                        <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px; padding: 12px; margin-bottom: 20px; text-align: center;">
+                            <p style="margin: 0; color: #856404; font-size: 14px;">
+                                <strong>Guest Access:</strong> Limited functionality. Register for full features.
+                            </p>
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <button onclick="logoutUser()" style="width: 100%; padding: 15px; background: #dc3545; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 16px; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2); margin-bottom: 10px;" onmouseover="this.style.background='#c82333'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 8px rgba(220, 53, 69, 0.3)'" onmouseout="this.style.background='#dc3545'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(220, 53, 69, 0.2)'">
+                                🚪 Logout
+                            </button>
+                            
+                            <button onclick="forceLogout()" style="width: 100%; padding: 10px; background: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px;">
+                                🔧 Force Logout (Debug)
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            getIndustrialMapScreen() {
+                return `
+                    <div style="padding: 20px;">
+                        <button onclick="window.ghmc_app.navigateToScreen('home')" style="margin-bottom: 20px; padding: 10px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 50%; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">←</button>
+                        <h2>Industrial Map</h2>
+                        <p style="color: #666; margin-bottom: 20px;">Industrial zones and facilities in Hyderabad</p>
+                        
+                        <div style="background: linear-gradient(135deg, #e8f4f8 0%, #f0f8ff 100%); padding: 40px 20px; border-radius: 8px; text-align: center; margin: 20px 0;">
+                            <h3 style="margin-bottom: 20px;">Hyderabad Industrial Areas</h3>
+                            <div style="display: flex; justify-content: space-around; margin: 20px 0;">
+                                <div onclick="alert('Microsoft India Development Center - Hitech City\\nArea: 83 acres\\nEmployees: 7000+\\nEstablished: 1998')" style="width: 24px; height: 24px; background: #28a745; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; cursor: pointer; transform: scale(1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">M</div>
+                                <div onclick="alert('Google Hyderabad - Gachibowli\\nArea: 5.2 acres\\nEmployees: 13000+\\nEstablished: 2004')" style="width: 24px; height: 24px; background: #28a745; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; cursor: pointer; transform: scale(1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">G</div>
+                                <div onclick="alert('Dr. Reddys Laboratories - Hitech City\\nArea: 190 acres\\nEmployees: 4500+\\nEstablished: 1984')" style="width: 24px; height: 24px; background: #28a745; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; cursor: pointer; transform: scale(1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">D</div>
+                                <div onclick="alert('TCS - Madhapur\\nArea: 15 acres\\nEmployees: 25000+\\nEstablished: 1991')" style="width: 24px; height: 24px; background: #28a745; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; cursor: pointer; transform: scale(1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">T</div>
+                            </div>
+                            <p style="color: #666; font-size: 14px;">Click markers to see industry details</p>
+                        </div>
+
+                        <div style="background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px;">
+                            <h4>Map Features:</h4>
+                            <ul style="margin: 0; padding-left: 20px;">
+                                <li>Interactive industry markers</li>
+                                <li>Filter by zone and type</li>
+                                <li>Detailed industry information</li>
+                                <li>Zoom and pan controls</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            }
+
+            getAIChatScreen() {
+                return `
+                    <div style="padding: 20px; height: calc(100vh - 160px); display: flex; flex-direction: column;">
+                        <div style="display: flex; align-items: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #e0e0e0;">
+                            <button onclick="window.ghmc_app.navigateToScreen('home')" style="margin-right: 16px; padding: 10px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 50%; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">←</button>
+                            <div>
+                                <h2 style="margin: 0;">AI Assistant</h2>
+                                <p style="margin: 0; color: #666; font-size: 14px;">24/7 Multilingual Support</p>
+                            </div>
+                        </div>
+                        
+                        <div id="chat-messages" style="flex: 1; background: #f8f8f8; border-radius: 8px; padding: 16px; margin-bottom: 16px; overflow-y: auto; max-height: 400px;">
+                            <div style="background: #e3f2fd; padding: 12px; border-radius: 8px; margin-bottom: 12px; max-width: 80%;">
+                                <div style="font-size: 12px; color: #666; margin-bottom: 4px;">AI Assistant</div>
+                                <div>Hello! I'm your GHMC AI Assistant. I can help you with:</div>
+                                <ul style="margin: 8px 0 0 16px; padding: 0;">
+                                    <li>Filing complaints and tracking status</li>
+                                    <li>Information about civic services</li>
+                                    <li>Multilingual support (English, Hindi, Telugu, Tamil, Kannada, Malayalam)</li>
+                                    <li>Emergency contact information</li>
+                                </ul>
+                                <div style="margin-top: 8px;">How can I assist you today?</div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" id="chat-input" placeholder="Type your message here..." style="flex: 1; padding: 12px; border: 1px solid #e0e0e0; border-radius: 6px; font-size: 16px;" onkeypress="if(event.key==='Enter') window.ghmc_app.sendMessage()">
+                            <button onclick="window.ghmc_app.sendMessage()" style="padding: 12px 20px; background: #333; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px;">Send</button>
+                        </div>
+
+                        <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button onclick="window.ghmc_app.quickMessage('How do I file a complaint?')" style="padding: 8px 12px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 16px; cursor: pointer; font-size: 14px;">How do I file a complaint?</button>
+                            <button onclick="window.ghmc_app.quickMessage('Track my complaint')" style="padding: 8px 12px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 16px; cursor: pointer; font-size: 14px;">Track my complaint</button>
+                            <button onclick="window.ghmc_app.quickMessage('Emergency contacts')" style="padding: 8px 12px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 16px; cursor: pointer; font-size: 14px;">Emergency contacts</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            setupScreenFunctionality(screenName) {
+                // Screen-specific setup if needed
+            }
+
+            updateUserInterface() {
+                const locationText = document.querySelector('.location-text');
+                if (locationText) {
+                    locationText.textContent = 'Guest Access • Hyderabad, Telangana';
+                }
+
+                const chatBtn = document.getElementById('ai-chat-btn');
+                if (chatBtn) {
+                    chatBtn.style.display = 'flex';
+                }
+            }
+
+            logout() {
+                console.log('Logout initiated');
+                
+                try {
+                    // Clear any session data
+                    sessionStorage.clear();
+                    localStorage.removeItem('ghmc_user_session');
+                    console.log('Session data cleared');
+                    
+                    // Show logout confirmation
+                    const confirmed = confirm('Are you sure you want to logout?');
+                    if (confirmed) {
+                        console.log('Logout confirmed, redirecting to login page');
+                        
+                        // Add a small delay to ensure cleanup is complete
+                        setTimeout(() => {
+                            // Redirect to login page
+                            window.location.href = 'auth-system.html';
+                        }, 100);
+                        
+                    } else {
+                        console.log('Logout cancelled');
+                    }
+                } catch (error) {
+                    console.error('Error during logout:', error);
+                    // Force redirect even if there's an error
+                    window.location.href = 'auth-system.html';
+                }
+            }
+
+            getServiceTitle(serviceKey) {
+                const serviceTitles = {
+                    'street-light': 'Street Light',
+                    'pothole': 'Road Pothole',
+                    'garbage': 'Garbage',
+                    'water-supply': 'Water Supply',
+                    'drainage': 'Drainage',
+                    'cctv': 'CCTV',
+                    'incident': 'Incident Reporting',
+                    'fogging': 'Fogging',
+                    'green-belt': 'Green Belt'
+                };
+                console.log('Getting title for service:', serviceKey, '-> Result:', serviceTitles[serviceKey]); // Debug log
+                return serviceTitles[serviceKey] || serviceKey;
+            }
+
+            sendMessage() {
+                const input = document.getElementById('chat-input');
+                const message = input.value.trim();
+                if (!message) return;
+
+                this.addChatMessage(message, 'user');
+                input.value = '';
+
+                // Simulate AI response
+                setTimeout(() => {
+                    const response = this.getAIResponse(message);
+                    this.addChatMessage(response, 'ai');
+                }, 1000);
+            }
+
+            quickMessage(message) {
+                document.getElementById('chat-input').value = message;
+                this.sendMessage();
+            }
+
+            addChatMessage(message, sender) {
+                const chatMessages = document.getElementById('chat-messages');
+                if (!chatMessages) return;
+
+                const messageDiv = document.createElement('div');
+                const isUser = sender === 'user';
+                
+                messageDiv.style.cssText = `
+                    background: ${isUser ? '#333' : '#e3f2fd'};
+                    color: ${isUser ? 'white' : '#333'};
+                    padding: 12px;
+                    border-radius: 8px;
+                    margin-bottom: 12px;
+                    max-width: 80%;
+                    margin-left: ${isUser ? 'auto' : '0'};
+                    margin-right: ${isUser ? '0' : 'auto'};
+                `;
+
+                messageDiv.innerHTML = `
+                    <div style="font-size: 12px; color: ${isUser ? '#ccc' : '#666'}; margin-bottom: 4px;">
+                        ${isUser ? 'You' : 'AI Assistant'}
+                    </div>
+                    <div>${message}</div>
+                `;
+
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            getAIResponse(message) {
+                const responses = {
+                    'how do i file a complaint?': 'To file a complaint: 1) Click on a service card from the home screen, 2) Fill in the complaint form with location and description, 3) Optionally add a photo, 4) Submit. You\'ll receive a complaint ID for tracking.',
+                    'track my complaint': 'You can track your complaints by clicking "My Complaints" in the bottom navigation. There you\'ll see all your submitted complaints with their current status and updates.',
+                    'emergency contacts': 'Emergency Contacts:\n• Fire: 101\n• Police: 100\n• Ambulance: 108\n• GHMC Control Room: 040-21111111\n• Water Emergency: 040-23220088\n• Electricity: 1912',
+                    'default': 'I understand you need help with civic services. I can assist with filing complaints, tracking existing complaints, providing emergency contacts, and answering questions about GHMC services. What specific help do you need?'
+                };
+
+                const key = message.toLowerCase();
+                return responses[key] || responses['default'];
+            }
+
+            submitComplaint() {
+                const category = document.getElementById('category-dropdown').value;
+                const description = document.getElementById('description-field').value.trim();
+
+                if (!category) {
+                    alert('Please select an issue category.');
+                    return;
+                }
+
+                if (!description) {
+                    alert('Please provide a description of the issue.');
+                    return;
+                }
+
+                // Generate complaint ID
+                const complaintId = 'GHMC' + new Date().getFullYear() + String(Math.floor(Math.random() * 1000)).padStart(3, '0');
+                
+                alert(`Complaint submitted successfully!\n\nComplaint ID: ${complaintId}\nCategory: ${this.getServiceTitle(category)}\n\nYou can track your complaint status in the "My Complaints" section.`);
+                
+                // Clear the selected service and navigate to complaints
+                sessionStorage.removeItem('selectedService');
+                this.navigateToScreen('complaints');
+            }
+        }
+    </script>
+</body>
+</html>

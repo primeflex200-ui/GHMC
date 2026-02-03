@@ -1,0 +1,13 @@
+{
+  "name": "ghmc-civic-services",
+  "version": "1.0.0",
+  "description": "GHMC Civic Services - Digital Platform for Greater Hyderabad Municipal Corporation",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["ghmc", "civic", "services", "hyderabad", "municipal"],
+  "author": "GHMC Development Team",
+  "license": "MIT"
+}

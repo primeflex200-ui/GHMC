@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GHMC Employee Dashboard</title>
+    <link rel="stylesheet" href="role-dashboards.css">
+    <link rel="stylesheet" href="employee-dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1>Employee Dashboard</h1>
+                    <div class="user-info">
+                        <span class="user-name" id="user-name">Employee</span>
+                        <span class="user-id" id="user-id">ID: Loading...</span>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="header-stats">
+                        <div class="stat-item">
+                            <span class="stat-number" id="assigned-tasks">0</span>
+                            <span class="stat-label">Assigned Tasks</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" id="completed-tasks">0</span>
+                            <span class="stat-label">Completed</span>
+                        </div>
+                    </div>
+                    <button class="btn-secondary" id="logout-btn">Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <!-- Task Status Overview -->
+            <section class="task-overview">
+                <h2>My Task Overview</h2>
+                <div class="status-cards">
+                    <div class="status-card not-started">
+                        <div class="status-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12,6 12,12 16,14"/>
+                            </svg>
+                        </div>
+                        <div class="status-info">
+                            <div class="status-count" id="not-started-count">0</div>
+                            <div class="status-label">Not Started</div>
+                        </div>
+                    </div>
+
+                    <div class="status-card in-progress">
+                        <div class="status-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22,4 12,14.01 9,11.01"/>
+                            </svg>
+                        </div>
+                        <div class="status-info">
+                            <div class="status-count" id="in-progress-count">0</div>
+                            <div class="status-label">In Progress</div>
+                        </div>
+                    </div>
+
+                    <div class="status-card completed">
+                        <div class="status-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22,4 12,14.01 9,11.01"/>
+                            </svg>
+                        </div>
+                        <div class="status-info">
+                            <div class="status-count" id="completed-count">0</div>
+                            <div class="status-label">Completed</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Assigned Tasks -->
+            <section class="tasks-section">
+                <div class="section-header">
+                    <h2>My Assigned Tasks</h2>
+                    <div class="section-controls">
+                        <select class="filter-select" id="status-filter">
+                            <option value="">All Status</option>
+                            <option value="not-started">Not Started</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                        <select class="filter-select" id="priority-filter">
+                            <option value="">All Priority</option>
+                            <option value="critical">Critical</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                        <button class="btn-secondary" id="refresh-tasks">Refresh</button>
+                    </div>
+                </div>
+
+                <div class="tasks-list" id="tasks-list">
+                    <!-- Tasks will be populated here -->
+                </div>
+            </section>
+        </main>
+
+        <!-- Task Detail Modal -->
+        <div class="modal" id="task-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Task Details</h3>
+                    <button class="close-btn" id="close-task-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="task-details" id="task-details">
+                        <!-- Task details will be shown here -->
+                    </div>
+                    
+                    <form class="task-form" id="task-form">
+                        <div class="form-group">
+                            <label class="form-label">Update Status</label>
+                            <select class="form-input" id="task-status-update" required>
+                                <option value="">Select Status</option>
+                                <option value="not-started">Not Started</option>
+                                <option value="in-progress">In Progress</option>
+                                <option value="completed">Completed</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Work Notes</label>
+                            <textarea class="form-input" id="work-notes" rows="4" placeholder="Add notes about your work progress..."></textarea>
+                        </div>
+
+                        <div class="form-group" id="completion-proof-group" style="display: none;">
+                            <label class="form-label">Upload Completion Proof</label>
+                            <input type="file" class="form-input" id="completion-proof" multiple accept="image/*">
+                            <div class="file-info">
+                                <small>Upload photos showing completed work</small>
+                            </div>
+                            <div class="proof-preview" id="proof-preview"></div>
+                        </div>
+
+                        <div class="form-group" id="completion-remarks-group" style="display: none;">
+                            <label class="form-label">Completion Remarks</label>
+                            <textarea class="form-input" id="completion-remarks" rows="3" placeholder="Add remarks about the completed work..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-primary" id="update-task">Update Task</button>
+                    <button class="btn-secondary" id="cancel-task-update">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="role-permissions.js"></script>
+    <script src="employee-dashboard.js"></script>
+</body>
+</html>

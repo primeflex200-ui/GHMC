@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GHMC Civic Services</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .app-container {
+            max-width: 414px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .app-header {
+            background-color: #ffffff;
+            padding: 20px 16px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .app-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+        
+        .location-text {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 16px;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 80px;
+        }
+        
+        .service-card {
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .service-card:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .service-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 12px;
+            background-color: #f8f8f8;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+        
+        .service-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+        
+        .service-card p {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .bottom-nav {
+            background-color: #ffffff;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            padding: 8px 0;
+        }
+        
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 4px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .nav-item.active {
+            color: #1a1a1a;
+        }
+        
+        .nav-item span {
+            font-size: 11px;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1>GHMC Civic Services</h1>
+            <div class="location-text">Live Preview • Hyderabad</div>
+        </header>
+
+        <main class="main-content">
+            <div class="services-grid">
+                <div class="service-card" onclick="alert('Street Light Service Selected')">
+                    <div class="service-icon">💡</div>
+                    <h3>Street Light</h3>
+                    <p>Report street lighting issues</p>
+                </div>
+
+                <div class="service-card" onclick="alert('Road Pothole Service Selected')">
+                    <div class="service-icon">🕳️</div>
+                    <h3>Road Pothole</h3>
+                    <p>Report road damage and potholes</p>
+                </div>
+
+                <div class="service-card" onclick="alert('Garbage Collection Service Selected')">
+                    <div class="service-icon">🗑️</div>
+                    <h3>Garbage</h3>
+                    <p>Report waste collection issues</p>
+                </div>
+
+                <div class="service-card" onclick="alert('Water Supply Service Selected')">
+                    <div class="service-icon">💧</div>
+                    <h3>Water Supply</h3>
+                    <p>Report water supply problems</p>
+                </div>
+
+                <div class="service-card" onclick="alert('Drainage Service Selected')">
+                    <div class="service-icon">🚰</div>
+                    <h3>Drainage</h3>
+                    <p>Report drainage and sewage issues</p>
+                </div>
+
+                <div class="service-card" onclick="alert('CCTV Service Selected')">
+                    <div class="service-icon">📹</div>
+                    <h3>CCTV</h3>
+                    <p>Report security camera issues</p>
+                </div>
+
+                <div class="service-card" onclick="alert('Incident Reporting Service Selected')">
+                    <div class="service-icon">⚠️</div>
+                    <h3>Incident Reporting</h3>
+                    <p>Report general incidents</p>
+                </div>
+
+                <div class="service-card" onclick="alert('Fogging Service Selected')">
+                    <div class="service-icon">🌫️</div>
+                    <h3>Fogging</h3>
+                    <p>Request mosquito fogging</p>
+                </div>
+
+                <div class="service-card" onclick="alert('Green Belt Service Selected')">
+                    <div class="service-icon">🌳</div>
+                    <h3>Green Belt</h3>
+                    <p>Report park and garden issues</p>
+                </div>
+            </div>
+        </main>
+
+        <nav class="bottom-nav">
+            <button class="nav-item active" onclick="alert('Home Screen')">
+                <div>🏠</div>
+                <span>Home</span>
+            </button>
+            <button class="nav-item" onclick="alert('Raise Issue Screen')">
+                <div>➕</div>
+                <span>Raise Issue</span>
+            </button>
+            <button class="nav-item" onclick="alert('My Complaints Screen')">
+                <div>📋</div>
+                <span>My Complaints</span>
+            </button>
+            <button class="nav-item" onclick="alert('Industrial Map Screen - Interactive map of Hyderabad industrial zones')">
+                <div>🗺️</div>
+                <span>Industrial Map</span>
+            </button>
+            <button class="nav-item" onclick="alert('Profile Screen')">
+                <div>👤</div>
+                <span>Profile</span>
+            </button>
+        </nav>
+    </div>
+</body>
+</html>

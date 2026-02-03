@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GHMC Civic Services</title>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* App Container */
+        .app-container {
+            max-width: 414px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Header */
+        .app-header {
+            background-color: #ffffff;
+            padding: 20px 16px 16px;
+            border-bottom: 1px solid #e0e0e0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .app-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .location-text {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .chat-btn {
+            background: #333;
+            color: #ffffff;
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .chat-btn:hover {
+            background: #1a1a1a;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Services Grid */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 80px;
+        }
+
+        /* Service Cards */
+        .service-card {
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .service-card:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .service-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f8f8;
+            border-radius: 6px;
+            color: #333;
+        }
+
+        .service-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+
+        .service-card p {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            background-color: #ffffff;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            padding: 8px 0;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 4px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #666;
+        }
+
+        .nav-item.active {
+            color: #1a1a1a;
+        }
+
+        .nav-item:hover {
+            background-color: #f8f8f8;
+        }
+
+        .nav-item svg {
+            margin-bottom: 4px;
+        }
+
+        .nav-item span {
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        /* Demo Content */
+        .demo-screen {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .demo-screen h2 {
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .demo-screen p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .demo-feature {
+            background: #f8f8f8;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 12px 0;
+            text-align: left;
+        }
+
+        .demo-feature h4 {
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .demo-feature ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .demo-feature li {
+            color: #666;
+            padding: 4px 0;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .demo-feature li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .map-demo {
+            background: linear-gradient(135deg, #e8f4f8 0%, #f0f8ff 100%);
+            padding: 40px 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .map-demo h3 {
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .map-markers {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+
+        .map-marker {
+            width: 24px;
+            height: 24px;
+            background: #28a745;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .map-marker:hover {
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <h1>GHMC Civic Services</h1>
+            <div class="header-actions">
+                <div class="location-info">
+                    <span class="location-text">Preview Mode • Hyderabad, Telangana</span>
+                </div>
+                <button class="chat-btn" onclick="showAlert('AI Chat')" title="AI Assistant">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Home Screen -->
+            <div class="screen active" id="home-screen">
+                <div class="services-grid">
+                    <div class="service-card" onclick="showAlert('Street Light Service')">
+                        <div class="service-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                            </svg>
+                        </div>
+                        <h3>Street Light</h3>
+                        <p>Report street lighting issues</p>
+                    </div>
+
+                    <div class="service-card" onclick="showAlert('Road Pothole Service')">
+                        <div class="service-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                                <circle cx="12" cy="12" r="4"/>
+                            </svg>
+                        </div>
+                        <h3>Road Pothole</h3>
+                        <p>Report road damage and potholes</p>
+                    </div>
+
+                    <div class="service-card" onclick="showAlert('Garbage Collection Service')">
+                        <div class="service-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3,6 5,6 21,6"/>
+                                <path d="m19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"/>
+                            </svg>
+                        </div>
+                        <h3>Garbage</h3>
+                        <p>Report waste collection issues</p>
+                    </div>
+
+                    <div class="service-card" onclick="showAlert('Water Supply Service')">
+                        <div class="service-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+                            </svg>
+                        </div>
+                        <h3>Water Supply</h3>
+                        <p>Report water supply problems</p>
+                    </div>
+
+                    <div class="service-card" onclick="showAlert('Drainage Service')">
+                        <div class="service-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 12h18m-9-9v18"/>
+                                <path d="M8 8l4-4 4 4"/>
+                                <path d="M16 16l-4 4-4-4"/>
+                            </svg>
+                        </div>
+                        <h3>Drainage</h3>
+                        <p>Report drainage and sewage issues</p>
+                    </div>
+
+                    <div class="service-card" onclick="showAlert('CCTV Service')">
+                        <div class="service-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M23 7l-7 5 7 5V7z"/>
+                                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                            </svg>
+                        </div>
+                        <h3>CCTV</h3>
+                        <p>Report security camera issues</p>
+                    </div>
+
+                    <div class="service-card" onclick="showAlert('Incident Reporting Service')">
+                        <div class="service-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="12"/>
+                                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
+                        </div>
+                        <h3>Incident Reporting</h3>
+                        <p>Report general incidents</p>
+                    </div>
+
+                    <div class="service-card" onclick="showAlert('Fogging Service')">
+                        <div class="service-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16 13v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8"/>
+                                <rect x="2" y="3" width="20" height="10" rx="2" ry="2"/>
+                                <line x1="7" y1="8" x2="17" y2="8"/>
+                            </svg>
+                        </div>
+                        <h3>Fogging</h3>
+                        <p>Request mosquito fogging</p>
+                    </div>
+
+                    <div class="service-card" onclick="showAlert('Green Belt Service')">
+                        <div class="service-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                <path d="M9 12l2 2 4-4"/>
+                            </svg>
+                        </div>
+                        <h3>Green Belt</h3>
+                        <p>Report park and garden issues</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Demo Screens -->
+            <div class="screen" id="raise-issue-screen">
+                <div class="demo-screen">
+                    <h2>Raise Issue</h2>
+                    <p>This is where users would submit new complaints</p>
+                    <div class="demo-feature">
+                        <h4>Features:</h4>
+                        <ul>
+                            <li>Category selection</li>
+                            <li>Location detection</li>
+                            <li>Photo upload</li>
+                            <li>Description input</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="screen" id="complaints-screen">
+                <div class="demo-screen">
+                    <h2>My Complaints</h2>
+                    <p>Track your submitted complaints</p>
+                    <div class="demo-feature">
+                        <h4>Sample Complaints:</h4>
+                        <ul>
+                            <li>Street Light Not Working - In Progress</li>
+                            <li>Road Pothole - Resolved</li>
+                            <li>Garbage Collection - Assigned</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="screen" id="industrial-map-screen">
+                <div class="demo-screen">
+                    <h2>Industrial Map</h2>
+                    <p>Interactive map of industrial zones in Hyderabad</p>
+                    <div class="map-demo">
+                        <h3>Hyderabad Industrial Areas</h3>
+                        <div class="map-markers">
+                            <div class="map-marker" onclick="showAlert('Microsoft India - Hitech City')" title="Microsoft">M</div>
+                            <div class="map-marker" onclick="showAlert('Google Hyderabad - Gachibowli')" title="Google">G</div>
+                            <div class="map-marker" onclick="showAlert('Dr. Reddys Labs - Hitech City')" title="Dr. Reddy's">D</div>
+                            <div class="map-marker" onclick="showAlert('TCS - Madhapur')" title="TCS">T</div>
+                        </div>
+                        <p style="color: #666; font-size: 14px;">Click markers to see industry details</p>
+                    </div>
+                    <div class="demo-feature">
+                        <h4>Map Features:</h4>
+                        <ul>
+                            <li>Interactive industry markers</li>
+                            <li>Filter by zone and type</li>
+                            <li>Detailed industry information</li>
+                            <li>Zoom and pan controls</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="screen" id="profile-screen">
+                <div class="demo-screen">
+                    <h2>Profile</h2>
+                    <p>User profile and statistics</p>
+                    <div class="demo-feature">
+                        <h4>Profile Information:</h4>
+                        <ul>
+                            <li>Personal details</li>
+                            <li>Complaint statistics</li>
+                            <li>Account settings</li>
+                            <li>Notification preferences</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" onclick="showScreen('home')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9,22 9,12 15,12 15,22"/>
+                </svg>
+                <span>Home</span>
+            </button>
+            <button class="nav-item" onclick="showScreen('raise-issue')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                <span>Raise Issue</span>
+            </button>
+            <button class="nav-item" onclick="showScreen('complaints')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14,2 14,8 20,8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                    <polyline points="10,9 9,9 8,9"/>
+                </svg>
+                <span>My Complaints</span>
+            </button>
+            <button class="nav-item" onclick="showScreen('industrial-map')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                </svg>
+                <span>Industrial Map</span>
+            </button>
+            <button class="nav-item" onclick="showScreen('profile')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+                <span>Profile</span>
+            </button>
+        </nav>
+    </div>
+
+    <script>
+        function showScreen(screenName) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // Remove active from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected screen
+            document.getElementById(screenName + '-screen').classList.add('active');
+            
+            // Add active to clicked nav item
+            event.target.closest('.nav-item').classList.add('active');
+        }
+        
+        function showAlert(message) {
+            alert(message + ' - This is a preview demo. Full functionality available in the complete application.');
+        }
+        
+        // Initialize
+        console.log('GHMC Civic Services Preview Loaded Successfully!');
+    </script>
+</body>
+</html>

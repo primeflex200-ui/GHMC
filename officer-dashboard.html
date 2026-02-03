@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GHMC Officer Manager Dashboard</title>
+    <link rel="stylesheet" href="role-dashboards.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1>Officer Manager Dashboard</h1>
+                    <div class="user-info">
+                        <span class="user-name" id="user-name">Officer Manager</span>
+                        <span class="user-department" id="user-department">Department: Loading...</span>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="header-stats">
+                        <div class="stat-item">
+                            <span class="stat-number" id="total-complaints">0</span>
+                            <span class="stat-label">Total Complaints</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" id="pending-assignment">0</span>
+                            <span class="stat-label">Pending Assignment</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" id="escalated-count">0</span>
+                            <span class="stat-label">Escalated</span>
+                        </div>
+                    </div>
+                    <button class="btn-secondary" id="logout-btn">Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <!-- Quick Actions -->
+            <section class="quick-actions">
+                <h2>Management Actions</h2>
+                <div class="actions-grid">
+                    <button class="action-card" id="assign-complaints">
+                        <div class="action-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="8.5" cy="7" r="4"/>
+                                <line x1="20" y1="8" x2="20" y2="14"/>
+                                <line x1="23" y1="11" x2="17" y2="11"/>
+                            </svg>
+                        </div>
+                        <h3>Assign Complaints</h3>
+                        <p>Assign complaints to field managers</p>
+                    </button>
+
+                    <button class="action-card" id="monitor-progress">
+                        <div class="action-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12,6 12,12 16,14"/>
+                            </svg>
+                        </div>
+                        <h3>Monitor Progress</h3>
+                        <p>Track complaint resolution progress</p>
+                    </button>
+
+                    <button class="action-card" id="manage-teams">
+                        <div class="action-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
+                        </div>
+                        <h3>Manage Teams</h3>
+                        <p>Oversee field manager performance</p>
+                    </button>
+
+                    <button class="action-card" id="escalate-issues">
+                        <div class="action-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/>
+                            </svg>
+                        </div>
+                        <h3>Escalate Issues</h3>
+                        <p>Escalate critical complaints to admin</p>
+                    </button>
+
+                    <button class="action-card" id="generate-reports">
+                        <div class="action-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14,2 14,8 20,8"/>
+                                <line x1="16" y1="13" x2="8" y2="13"/>
+                                <line x1="16" y1="17" x2="8" y2="17"/>
+                                <polyline points="10,9 9,9 8,9"/>
+                            </svg>
+                        </div>
+                        <h3>Generate Reports</h3>
+                        <p>Create performance and status reports</p>
+                    </button>
+
+                    <button class="action-card" id="bulk-operations">
+                        <div class="action-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+                                <line x1="9" y1="14" x2="15" y2="14"/>
+                                <line x1="9" y1="18" x2="15" y2="18"/>
+                            </svg>
+                        </div>
+                        <h3>Bulk Operations</h3>
+                        <p>Perform bulk actions on complaints</p>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Complaints Overview -->
+            <section class="complaints-section">
+                <div class="section-header">
+                    <h2>Complaints Overview</h2>
+                    <div class="section-controls">
+                        <select class="filter-select" id="department-filter">
+                            <option value="">All Departments</option>
+                            <option value="road-maintenance">Road Maintenance</option>
+                            <option value="electrical">Electrical</option>
+                            <option value="water-supply">Water Supply</option>
+                            <option value="waste-management">Waste Management</option>
+                            <option value="drainage">Drainage</option>
+                            <option value="security">Security</option>
+                            <option value="health">Health</option>
+                            <option value="parks">Parks & Gardens</option>
+                        </select>
+                        <select class="filter-select" id="priority-filter">
+                            <option value="">All Priorities</option>
+                            <option value="critical">Critical</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                        <select class="filter-select" id="status-filter">
+                            <option value="">All Status</option>
+                            <option value="submitted">Submitted</option>
+                            <option value="assigned">Assigned</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="pending-verification">Pending Verification</option>
+                            <option value="resolved">Resolved</option>
+                            <option value="escalated">Escalated</option>
+                        </select>
+                        <button class="btn-secondary" id="refresh-complaints">Refresh</button>
+                    </div>
+                </div>
+
+                <!-- Complaints Table -->
+                <div class="table-container">
+                    <table class="complaints-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="select-all">
+                                </th>
+                                <th>Complaint ID</th>
+                                <th>Category</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Assigned To</th>
+                                <th>Location</th>
+                                <th>Age</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="complaints-table-body">
+                            <!-- Complaints will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Bulk Actions Bar -->
+                <div class="bulk-actions-bar" id="bulk-actions-bar" style="display: none;">
+                    <div class="selected-count">
+                        <span id="selected-count">0</span> complaints selected
+                    </div>
+                    <div class="bulk-actions">
+                        <select class="bulk-action-select" id="bulk-action-select">
+                            <option value="">Choose Action</option>
+                            <option value="assign">Assign to Field Manager</option>
+                            <option value="change-priority">Change Priority</option>
+                            <option value="escalate">Escalate</option>
+                            <option value="export">Export Selected</option>
+                        </select>
+                        <button class="btn-primary" id="apply-bulk-action">Apply</button>
+                        <button class="btn-secondary" id="clear-selection">Clear Selection</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Field Managers Performance -->
+            <section class="performance-section">
+                <div class="section-header">
+                    <h2>Field Manager Performance</h2>
+                    <select class="filter-select" id="performance-period">
+                        <option value="today">Today</option>
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                    </select>
+                </div>
+
+                <div class="performance-grid" id="performance-grid">
+                    <!-- Performance cards will be populated here -->
+                </div>
+            </section>
+        </main>
+
+        <!-- Assignment Modal -->
+        <div class="modal" id="assignment-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Assign Complaint</h3>
+                    <button class="close-btn" id="close-assignment-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="complaint-details" id="assignment-complaint-details">
+                        <!-- Complaint details will be shown here -->
+                    </div>
+                    
+                    <form class="assignment-form" id="assignment-form">
+                        <div class="form-group">
+                            <label class="form-label">Select Field Manager</label>
+                            <select class="form-input" id="field-manager-select" required>
+                                <option value="">Choose Field Manager</option>
+                                <!-- Field managers will be populated here -->
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Priority Level</label>
+                            <select class="form-input" id="priority-select" required>
+                                <option value="low">Low Priority</option>
+                                <option value="medium" selected>Medium Priority</option>
+                                <option value="high">High Priority</option>
+                                <option value="critical">Critical</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Expected Completion</label>
+                            <input type="datetime-local" class="form-input" id="expected-completion">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Assignment Notes</label>
+                            <textarea class="form-input" id="assignment-notes" rows="3" placeholder="Add any special instructions or notes..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Tags</label>
+                            <div class="tags-input">
+                                <input type="text" class="form-input" id="tags-input" placeholder="Add tags (press Enter to add)">
+                                <div class="tags-list" id="tags-list"></div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-primary" id="submit-assignment">Assign Complaint</button>
+                    <button class="btn-secondary" id="cancel-assignment">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="role-permissions.js"></script>
+    <script src="officer-dashboard.js"></script>
+</body>
+</html>

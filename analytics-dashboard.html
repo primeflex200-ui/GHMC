@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GHMC Analytics Dashboard</title>
+    <link rel="stylesheet" href="analytics-dashboard.css">
+</head>
+<body>
+    <div class="analytics-container">
+        <!-- Header -->
+        <header class="analytics-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1>GHMC Analytics Dashboard</h1>
+                    <div class="date-range">
+                        <span id="current-period">Last 30 Days</span>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <select class="period-selector" id="period-selector">
+                        <option value="today">Today</option>
+                        <option value="week">Last 7 Days</option>
+                        <option value="month" selected>Last 30 Days</option>
+                        <option value="quarter">Last 3 Months</option>
+                        <option value="year">Last Year</option>
+                    </select>
+                    <button class="export-btn" id="export-analytics">Export Data</button>
+                    <button class="refresh-btn" id="refresh-analytics">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 4 23 10 17 10"/>
+                            <polyline points="1 20 1 14 7 14"/>
+                            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="analytics-main">
+            <!-- Key Metrics -->
+            <section class="metrics-section">
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <h3>Total Complaints</h3>
+                            <div class="metric-trend positive" id="complaints-trend">+12%</div>
+                        </div>
+                        <div class="metric-value" id="total-complaints">1,247</div>
+                        <div class="metric-subtitle">This period</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <h3>Resolution Rate</h3>
+                            <div class="metric-trend positive" id="resolution-trend">+5%</div>
+                        </div>
+                        <div class="metric-value" id="resolution-rate">87.3%</div>
+                        <div class="metric-subtitle">Complaints resolved</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <h3>Avg Resolution Time</h3>
+                            <div class="metric-trend negative" id="time-trend">-8%</div>
+                        </div>
+                        <div class="metric-value" id="avg-resolution-time">2.4 days</div>
+                        <div class="metric-subtitle">Average time to resolve</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <h3>AI Capture Rate</h3>
+                            <div class="metric-trend positive" id="ai-trend">+23%</div>
+                        </div>
+                        <div class="metric-value" id="ai-capture-rate">34.2%</div>
+                        <div class="metric-subtitle">Via AI assistant</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <h3>User Satisfaction</h3>
+                            <div class="metric-trend positive" id="satisfaction-trend">+3%</div>
+                        </div>
+                        <div class="metric-value" id="user-satisfaction">4.2/5</div>
+                        <div class="metric-subtitle">Average rating</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <h3>Active Field Managers</h3>
+                            <div class="metric-trend neutral" id="managers-trend">0%</div>
+                        </div>
+                        <div class="metric-value" id="active-managers">24</div>
+                        <div class="metric-subtitle">Currently active</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Section -->
+            <section class="charts-section">
+                <div class="charts-grid">
+                    <!-- Complaints Over Time -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Complaints Over Time</h3>
+                            <div class="chart-controls">
+                                <button class="chart-toggle active" data-chart="line">Line</button>
+                                <button class="chart-toggle" data-chart="bar">Bar</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="complaints-chart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Category Distribution -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Complaints by Category</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="category-chart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Status Distribution -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Status Distribution</h3>
+                        </div>
+                        <div class="chart-container">
+                            <div class="status-bars" id="status-bars">
+                                <!-- Status bars will be generated here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resolution Time Trends -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Resolution Time Trends</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="resolution-chart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Performance Section -->
+            <section class="performance-section">
+                <div class="section-header">
+                    <h2>Department Performance</h2>
+                    <select class="department-filter" id="department-filter">
+                        <option value="">All Departments</option>
+                        <option value="electrical">Electrical</option>
+                        <option value="road-maintenance">Road Maintenance</option>
+                        <option value="waste-management">Waste Management</option>
+                        <option value="water-supply">Water Supply</option>
+                        <option value="drainage">Drainage</option>
+                        <option value="security">Security</option>
+                        <option value="health">Health</option>
+                        <option value="parks">Parks & Gardens</option>
+                    </select>
+                </div>
+
+                <div class="performance-grid" id="performance-grid">
+                    <!-- Performance cards will be generated here -->
+                </div>
+            </section>
+
+            <!-- Geographic Analysis -->
+            <section class="geographic-section">
+                <div class="section-header">
+                    <h2>Geographic Analysis</h2>
+                    <div class="map-controls">
+                        <button class="map-toggle active" data-view="heatmap">Heat Map</button>
+                        <button class="map-toggle" data-view="clusters">Clusters</button>
+                    </div>
+                </div>
+
+                <div class="geographic-grid">
+                    <div class="map-card">
+                        <div class="map-placeholder" id="complaints-map">
+                            <div class="map-info">
+                                <h4>Complaint Distribution Map</h4>
+                                <p>Interactive map showing complaint density across Hyderabad</p>
+                                <div class="map-legend">
+                                    <div class="legend-item">
+                                        <div class="legend-color high"></div>
+                                        <span>High Density</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color medium"></div>
+                                        <span>Medium Density</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color low"></div>
+                                        <span>Low Density</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="area-stats">
+                        <h4>Top Areas by Complaints</h4>
+                        <div class="area-list" id="area-list">
+                            <!-- Area statistics will be generated here -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AI Analytics -->
+            <section class="ai-analytics-section">
+                <div class="section-header">
+                    <h2>AI Assistant Analytics</h2>
+                </div>
+
+                <div class="ai-metrics-grid">
+                    <div class="ai-metric-card">
+                        <h4>Language Distribution</h4>
+                        <div class="language-bars" id="language-bars">
+                            <!-- Language bars will be generated here -->
+                        </div>
+                    </div>
+
+                    <div class="ai-metric-card">
+                        <h4>AI Accuracy</h4>
+                        <div class="accuracy-display">
+                            <div class="accuracy-circle">
+                                <div class="accuracy-value" id="ai-accuracy">92.5%</div>
+                                <div class="accuracy-label">Classification Accuracy</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ai-metric-card">
+                        <h4>Response Time</h4>
+                        <div class="response-time-chart" id="response-time-chart">
+                            <!-- Response time visualization -->
+                        </div>
+                    </div>
+
+                    <div class="ai-metric-card">
+                        <h4>User Interactions</h4>
+                        <div class="interaction-stats" id="interaction-stats">
+                            <!-- Interaction statistics -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Real-time Activity -->
+            <section class="realtime-section">
+                <div class="section-header">
+                    <h2>Real-time Activity</h2>
+                    <div class="activity-status">
+                        <div class="status-dot active"></div>
+                        <span>Live Updates</span>
+                    </div>
+                </div>
+
+                <div class="activity-feed" id="activity-feed">
+                    <!-- Real-time activity items will be generated here -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="analytics-dashboard.js"></script>
+</body>
+</html>

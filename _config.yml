@@ -1,0 +1,37 @@
+# GitHub Pages Configuration for GHMC Civic Services
+
+# Site settings
+title: "GHMC Civic Services"
+description: "Complete Digital Platform for Greater Hyderabad Municipal Corporation"
+url: "https://primeflex200-ui.github.io"
+baseurl: "/GHMC"
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+
+# Plugins
+plugins:
+  - jekyll-sitemap
+  - jekyll-feed
+
+# Exclude files from processing
+exclude:
+  - node_modules/
+  - package.json
+  - package-lock.json
+  - server.js
+  - start-server.bat
+  - .vscode/
+
+# Include files
+include:
+  - _redirects
+
+# Default layout
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "default"
