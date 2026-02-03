@@ -11,6 +11,15 @@ class IALAAuthSystem {
         this.setupEventListeners();
         this.checkExistingSession();
         this.loadDemoUsers();
+        this.initializeUI();
+    }
+
+    initializeUI() {
+        // Hide citizen access section on initial load (welcome screen is default)
+        const citizenAccessSection = document.querySelector('.citizen-access-section');
+        if (citizenAccessSection) {
+            citizenAccessSection.style.display = 'none';
+        }
     }
 
     setupEventListeners() {
@@ -965,15 +974,13 @@ class IALAAuthSystem {
         });
         document.getElementById(screenId).classList.add('active');
         
-        // Hide citizen access section when showing user access screens
+        // Hide citizen access section when showing user access screens or welcome screen
         const citizenAccessSection = document.querySelector('.citizen-access-section');
         if (citizenAccessSection) {
-            if (screenId === 'user-access-screen' || screenId === 'registration-screen' || screenId === 'user-login-screen') {
+            if (screenId === 'welcome-screen' || screenId === 'user-access-screen' || screenId === 'registration-screen' || screenId === 'user-login-screen') {
                 citizenAccessSection.style.display = 'none';
             } else if (screenId === 'login-screen') {
                 citizenAccessSection.style.display = 'block';
-            } else if (screenId === 'welcome-screen') {
-                citizenAccessSection.style.display = 'none';
             }
         }
     }
